@@ -80,6 +80,7 @@
 - ブランチ名は `<種別>/<内容>` 形式にする（例: `feat/<plugin-name>-xxx`、`fix/...`、`chore/...`、`docs/...`）
 - **PR を作るのは、Plugin を作成・変更するブランチを main へマージするときだけ**（`/commit-and-pr` skill を利用できる）
 - それ以外のブランチ（`.claude/` の整備やドキュメント修正など）は PR を作らない。main へのマージは作業指示者が手動で行うので、Claude は勝手に main へマージしない
+- Claude は作業ブランチへの commit と push まで行ってよい（誤って push しても作業指示者が revert 等で対処する）。main への push はしない
 - 本リポジトリは GitHub で public だが、想定利用者は作業指示者本人である。広く一般に公開する水準の品質やユースケースは前提にしない（上記の PR 運用も private リポジトリ相当の扱い）
 - リリースタグ（`{plugin-name}--v{version}`）は main 上のコミットにだけ付ける
 - `stable` / `latest` のようなリリースチャネルが必要になったら、同じリポジトリの別 ref を指す Marketplace を 2 つ用意する方式を採る（公式 `plugin-marketplaces` の「release channels」）。チャネル同士は異なるバージョンに解決される必要がある
