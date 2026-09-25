@@ -1,7 +1,7 @@
 {
   "name": "statusline",
   "description": "Multi-line status line showing model, context usage, rate limits, and working location",
-  "version": "1.0.0",
+  "version": "0.9.0",
   "author": {
     "name": "empty-can"
   },

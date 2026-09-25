@@ -20,6 +20,7 @@ fi
 import sys
 import json
 import datetime
+import re
 import subprocess
 
 # Windows の Python はパイプへ ANSI コードページ（日本語環境では cp932）で書くため、
@@ -38,9 +39,14 @@ except Exception:
     print("statusLine: (parse error)")
     sys.exit(0)
 
-parts = []   # 1行目: 識別 + 実行状況（vim/agent/session/model/style/thinking/effort/Ctx/limits/version）
+parts = []   # 1行目: 識別 + 実行状況（version/vim/agent/session/model/style/thinking/effort/Ctx/limits）
 loc = []     # 2行目: 作業場所（cwd/proj/branch/git-wt/repo/wt/PR）
 added = []   # 3行目: added（added）
+
+# ── App version ───────────────────────────────────────────────────────────────
+version = data.get("version") or ""
+if version:
+    parts.append(f"v{version}")
 
 # ── Vim mode ──────────────────────────────────────────────────────────────────
 vim = data.get("vim")
@@ -73,6 +79,8 @@ elif short_id:
 # ── Model ─────────────────────────────────────────────────────────────────────
 model = data.get("model") or {}
 model_display = model.get("display_name") or model.get("id") or ""
+# "Opus 5.5 (1M context)" → "Opus 5.5 [1M]"
+model_display = re.sub(r"\s*\(([^()]+) context\)", r" [\1]", model_display)
 if model_display:
     parts.append(f"{model_display}")
 
@@ -89,8 +97,16 @@ if thinking.get("enabled"):
 
 effort = data.get("effort") or {}
 effort_level = effort.get("level") or ""
+EFFORT_ABBR = {
+    "low": "L",
+    "medium": "M",
+    "high": "H",
+    "xhigh": "xH",
+    "max": "Max",
+    "ultracode": "Ult",
+}
 if effort_level:
-    parts.append(f"effort:{effort_level}")
+    parts.append(f"effort:{EFFORT_ABBR.get(str(effort_level).lower(), effort_level)}")
 
 # ── Workspace / directory / git repo ─────────────────────────────────────────
 workspace = data.get("workspace") or {}
@@ -164,47 +180,42 @@ if used_pct is not None:
     used_i = int(round(used_pct))
     ctx_str = f"Ctx:{used_i}%"
 
-    ctx_size  = ctx.get("context_window_size")
-    total_in  = ctx.get("total_input_tokens")
-    total_out = ctx.get("total_output_tokens")
-
+    ctx_size = ctx.get("context_window_size")
     if ctx_size:
         ctx_str += f" [{fmt_tokens(ctx_size)}]"
-    if total_in is not None or total_out is not None:
-        in_str  = fmt_tokens(total_in)  if total_in  is not None else "0"
-        out_str = fmt_tokens(total_out) if total_out is not None else "0"
-        ctx_str += f" I/O:({in_str}/{out_str})"
-
-    cu = ctx.get("current_usage") or {}
-    cache_w = cu.get("cache_creation_input_tokens") or 0
-    cache_r = cu.get("cache_read_input_tokens") or 0
-    if cache_w or cache_r:
-        ctx_str += f" R/W:({fmt_tokens(cache_r)}/{fmt_tokens(cache_w)})"
 
     parts.append(ctx_str)
 else:
     parts.append("Ctx:--")
 
 # ── Rate limits ───────────────────────────────────────────────────────────────
-rate_limits = data.get("rate_limits") or {}
-rate_parts = []
-five_h = rate_limits.get("five_hour") or {}
-if five_h and five_h.get("used_percentage") is not None:
-    label = f"{int(round(five_h['used_percentage']))}%/5h"
-    if five_h.get("resets_at"):
-        dt = datetime.datetime.fromtimestamp(five_h["resets_at"])
-        label += f"(rst@{dt.strftime('%H:%M')})"
-    rate_parts.append(label)
-seven_d = rate_limits.get("seven_day") or {}
-if seven_d and seven_d.get("used_percentage") is not None:
-    rate_parts.append(f"{int(round(seven_d['used_percentage']))}%/7d")
-if rate_parts:
-    parts.append("limits:" + ",".join(rate_parts))
+# rate_limits はプラン・認証方式によっては存在しないため、欠落や想定外の値でも落とさない
+def fmt_rate(window, suffix, with_reset):
+    if not isinstance(window, dict):
+        return ""
+    try:
+        label = f"{int(round(float(window['used_percentage'])))}%/{suffix}"
+    except (KeyError, TypeError, ValueError):
+        return ""
+    if with_reset and window.get("resets_at"):
+        try:
+            dt = datetime.datetime.fromtimestamp(float(window["resets_at"]))
+            label += f"(rst@{dt.strftime('%H:%M')})"
+        except (TypeError, ValueError, OverflowError, OSError):
+            pass
+    return label
 
-# ── App version ───────────────────────────────────────────────────────────────
-version = data.get("version") or ""
-if version:
-    parts.append(f"v{version}")
+rate_limits = data.get("rate_limits")
+if not isinstance(rate_limits, dict):
+    rate_limits = {}
+rate_parts = [
+    p for p in (
+        fmt_rate(rate_limits.get("five_hour"), "5h", True),
+        fmt_rate(rate_limits.get("seven_day"), "7d", False),
+    ) if p
+]
+parts.append("limits:" + ",".join(rate_parts) if rate_parts else "limits: -")
+
 
 print(" | ".join(parts))   # 1行目
 if loc:

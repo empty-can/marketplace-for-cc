@@ -5,11 +5,13 @@ Claude Code のプロンプト下部に、複数行のステータスライン�
 表示例:
 
 ```text
-Opus 5.5 (1M context) | effort:high | Ctx:12% [1m] I/O:(120k/8k) R/W:(95k/3k) | limits:20%/5h(rst@18:00),35%/7d | v2.1.282
+v2.1.282 | Opus 5.5 [1M] | effort:H | Ctx:12% [1m] | limits:20%/5h(rst@18:00),35%/7d
 prj: C:/cc-workspace/my-repo | branch:main | remote https://github.com/owner/my-repo
 ```
 
-- 1 行目: モデル・effort・コンテキスト使用量・レート制限・バージョンなどの実行状況
+- 1 行目: バージョン・モデル・effort・コンテキスト使用率・レート制限などの実行状況
+  - effort は `L`（low）/ `M`（medium）/ `H`（high）/ `xH`（xhigh）/ `Max`（max）/ `Ult`（ultracode）と短縮表示します
+  - レート制限の情報が取得できない環境では `limits: -` と表示します
 - 2 行目: プロジェクト・カレントディレクトリ・ブランチ・リモート・PR などの作業場所
 - 3 行目: `/add-dir` で追加したディレクトリ（ある場合のみ）
 
