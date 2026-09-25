@@ -1,0 +1,16 @@
+{
+  "description": "同梱のステータスラインスクリプトを Plugin のデータディレクトリへコピーし、Plugin を更新しても settings.json から同じパスで参照できるようにする",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/scripts/sync.sh\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

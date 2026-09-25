@@ -1,0 +1,10 @@
+{
+  "name": "statusline",
+  "description": "モデル・effort・コンテキスト使用率・レート制限・作業場所を複数行で表示するステータスライン",
+  "version": "0.9.0",
+  "author": {
+    "name": "empty-can"
+  },
+  "repository": "https://github.com/empty-can/marketplace-for-cc",
+  "license": "MIT"
+}
