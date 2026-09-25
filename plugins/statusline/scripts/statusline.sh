@@ -141,15 +141,58 @@ if git_wt:
 if added_dirs:
     added.append(f"added:[{'; '.join(added_dirs)}]")
 
-# ── remote（非 git リポジトリ・origin 未設定はいずれも workspace.repo 不在で "-" になる）──
+# ── remote ────────────────────────────────────────────────────────────────────
+# 通常は Claude Code が origin を解析した workspace.repo を使う。
+# 自前ホストの GitLab のサブグループ配下等では workspace.repo が渡されないため、
+# その場合は git からリモート URL を取得して表示する（取れなければ "-"）
+def git_out(*args):
+    try:
+        r = subprocess.run(
+            ["git", "-C", cwd, *args],
+            capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=2,
+        )
+        return r.stdout.strip() if r.returncode == 0 else ""
+    except Exception:
+        return ""
+
+def remote_url_for_display(url):
+    url = url.strip()
+    # scp 形式（git@host:group/sub/proj.git）
+    web_scheme = "https"
+    m = re.match(r"^[^/@:]+@([^/:]+):(?!/)(.+)$", url)
+    if m:
+        host, path = m.group(1), m.group(2)
+    else:
+        m = re.match(r"^([a-zA-Z][a-zA-Z0-9+.-]*)://(?:[^/@]*@)?([^/]+)(/.*)?$", url)
+        if not m:
+            return url
+        scheme, host, path = m.group(1).lower(), m.group(2), (m.group(3) or "").lstrip("/")
+        # ssh のポートは Web のポートと異なるため捨てる
+        if scheme == "http":
+            web_scheme = "http"
+        elif scheme != "https":
+            host = host.split(":")[0]
+    # 認証情報（user:token@）は上の正規表現で除去済み
+    if path.endswith(".git"):
+        path = path[:-4]
+    return f"{web_scheme}://{host}/{path}".rstrip("/")
+
 repo = workspace.get("repo") or {}
 repo_owner = repo.get("owner") or ""
 repo_name  = repo.get("name") or ""
+remote_disp = ""
 if repo_owner and repo_name:
     repo_host = repo.get("host") or "github.com"
-    loc.append(f"remote https://{repo_host}/{repo_owner}/{repo_name}")
-else:
-    loc.append("remote -")
+    remote_disp = f"https://{repo_host}/{repo_owner}/{repo_name}"
+elif cwd:
+    remote_url = git_out("remote", "get-url", "origin")
+    if not remote_url:
+        remotes = git_out("remote").splitlines()
+        if remotes:
+            remote_url = git_out("remote", "get-url", remotes[0])
+    if remote_url:
+        remote_disp = remote_url_for_display(remote_url)
+loc.append(f"remote {remote_disp or '-'}")
 
 # ── Worktree session ──────────────────────────────────────────────────────────
 worktree = data.get("worktree") or {}
