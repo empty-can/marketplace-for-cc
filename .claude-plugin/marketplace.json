@@ -1,0 +1,14 @@
+{
+  "name": "empty-can",
+  "owner": {
+    "name": "empty-can"
+  },
+  "description": "Claude Code plugins by empty-can",
+  "plugins": [
+    {
+      "name": "statusline",
+      "source": "./plugins/statusline",
+      "description": "Multi-line status line showing model, context usage, rate limits, and working location"
+    }
+  ]
+}

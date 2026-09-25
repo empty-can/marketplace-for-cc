@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## リポジトリの位置付け
 
-Claude Code 用 Plugin Marketplace（`.claude/` チーム共有・統制における「層2: Plugin・Marketplace」配布チャネル）を置くためのリポジトリ。現時点では README / LICENSE / .gitignore のみで、Marketplace 定義や Plugin 本体はまだ存在しない。ビルド・lint・テストの仕組みもない。
+Claude Code 用 Plugin Marketplace（`.claude/` チーム共有・統制における「層2: Plugin・Marketplace」配布チャネル）。Marketplace 定義は `.claude-plugin/marketplace.json`、Plugin 本体は `plugins/<plugin-name>/` に置く。ビルドの仕組みは無く、検証は `claude plugin validate`（手順は `.claude/CLAUDE.md`）で行う。
 
 設計・配布・統制の**正本はこのリポジトリではなく** [`cc-relative-info` の `claude-dir-sharing-governance/`](https://github.com/empty-can/cc-relative-info/tree/develop/claude-dir-sharing-governance)。Marketplace による配布の手順は同ドキュメントの `reports/02.配布物の開発・テスト/01.Plugin・Marketplace編/` を参照し、構成・命名の判断はそちらに合わせる。
 

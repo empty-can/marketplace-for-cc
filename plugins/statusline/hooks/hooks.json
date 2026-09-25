@@ -1,0 +1,16 @@
+{
+  "description": "Copy the bundled status line script to the plugin data directory so settings.json can point at a path that survives plugin updates",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/scripts/sync.sh\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
