@@ -54,6 +54,8 @@
 ### バージョン管理
 
 - バージョンは `plugin.json` の `version` に明示し、semver（`MAJOR.MINOR.PATCH`）で管理する。破壊的変更は MAJOR、機能追加は MINOR、修正は PATCH を上げる
+  - 軽微な修正も PATCH を上げてリリースする。4 桁目（`0.9.0.1`）や `+` のビルドメタデータ（`0.9.0+1`）は付けない。4 桁は `claude plugin tag` に拒否され、`+` 以降は semver の順序比較で無視されるため
+  - 検証中の版を区別したい場合はプレリリース表記（`0.9.1-rc.1`。通常版 `0.9.1` より古い扱い）を使う
 - **リリースのたびに必ず `version` を上げる**。上げずに push すると、利用者側では「最新」と判定されて更新が届かない
 - `version` は `plugin.json` だけに書き、`marketplace.json` のエントリには書かない。両方に書くと常に `plugin.json` が優先され、食い違っても警告が出ない
 - 変更内容は Plugin ごとの `CHANGELOG.md` に記録する
