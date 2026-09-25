@@ -216,3 +216,11 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Claude Code（個人設定・ローカル作業用）
+.claude/settings.local.json
+CLAUDE.local.md
+.claude/agent-memory-local/
+.claude/work/
+# hooks/bat_cp932_guard.py が生成する .bat の UTF-8 作業コピー（再生成可能な派生物）
+.claude/.bat-shadow/
