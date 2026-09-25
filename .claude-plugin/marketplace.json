@@ -3,12 +3,12 @@
   "owner": {
     "name": "empty-can"
   },
-  "description": "Claude Code plugins by empty-can",
+  "description": "empty-can が作成した Claude Code 用 Plugin 集",
   "plugins": [
     {
       "name": "statusline",
       "source": "./plugins/statusline",
-      "description": "Multi-line status line showing model, context usage, rate limits, and working location"
+      "description": "モデル・effort・コンテキスト使用率・レート制限・作業場所を複数行で表示するステータスライン"
     }
   ]
 }

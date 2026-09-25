@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# SessionStart hook: copy statusline.sh to ${CLAUDE_PLUGIN_DATA}.
+# SessionStart hook: statusline.sh を ${CLAUDE_PLUGIN_DATA} へコピーする。
 #
-# The plugin cache path changes on every update, so settings.json points at the
-# data directory instead, which survives updates.
+# Plugin のキャッシュパスは更新のたびに変わるため、settings.json からは
+# 更新後も変わらないデータディレクトリを参照させる。
 #
-# Must stay silent and always exit 0: SessionStart stdout is added to Claude's
-# context, and a failure here must not disturb the session. On failure the
-# previously synced copy keeps working.
+# 何も出力せず、常に exit 0 で終えること。SessionStart の標準出力は Claude の
+# コンテキストに追加され、ここでの失敗でセッションを妨げてはならないため。
+# 失敗しても前回コピーしたスクリプトで表示は続く。
 
 src="${CLAUDE_PLUGIN_ROOT:-}/scripts/statusline.sh"
 dst_dir="${CLAUDE_PLUGIN_DATA:-}"
@@ -17,13 +17,13 @@ fi
 
 dst="$dst_dir/statusline.sh"
 
-# Skip the write when nothing changed (cmp missing also falls through to the copy)
+# 内容が同じなら書き込まない（cmp が無い環境ではコピーに進む）
 if cmp -s "$src" "$dst" 2>/dev/null; then
     exit 0
 fi
 
-# Write to a temp file and rename, so a status line refresh running at the same
-# moment never reads a half-written script
+# 一時ファイルに書いてから置き換える。同時に走るステータスラインの更新が
+# 書きかけのスクリプトを読まないようにするため
 mkdir -p "$dst_dir" 2>/dev/null \
     && cp "$src" "$dst.tmp.$$" 2>/dev/null \
     && mv -f "$dst.tmp.$$" "$dst" 2>/dev/null

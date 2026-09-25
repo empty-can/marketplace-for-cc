@@ -1,6 +1,6 @@
 {
   "name": "statusline",
-  "description": "Multi-line status line showing model, context usage, rate limits, and working location",
+  "description": "モデル・effort・コンテキスト使用率・レート制限・作業場所を複数行で表示するステータスライン",
   "version": "0.9.0",
   "author": {
     "name": "empty-can"
