@@ -1,0 +1,10 @@
+{
+  "name": "pre-compact",
+  "description": "/compact または /clear の前に、終了方式の判定・未コミット変更の確認・継続情報の memory 退避を行い、次セッションで再開できる状態を整える skill",
+  "version": "0.9.0",
+  "author": {
+    "name": "empty-can"
+  },
+  "repository": "https://github.com/empty-can/marketplace-for-cc",
+  "license": "MIT"
+}

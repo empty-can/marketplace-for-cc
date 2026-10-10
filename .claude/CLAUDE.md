@@ -48,6 +48,8 @@
 
 - ルートで `validate .` を実行しても skill / agent / hook の中身は検査されない。Plugin ごとの `validate` も必ず実行する
 - 本リポジトリの `.claude/agents/` にある agent と同じ名前の agent を Plugin に入れると、このリポジトリ内でのテストではプロジェクト側の定義が優先される。Plugin 側の agent を確かめるときは名前の衝突に注意する
+- skill も同様で、`.claude/skills/<name>/` と同名の skill を Plugin に入れると、このリポジトリ内では bare の `/<name>` がプロジェクト側を指す。Plugin 側を確かめるときは名前空間付きの `/<plugin-name>:<name>` で呼ぶ
+- `plugins/` 側と `.claude/` 側の同期は作業指示者が行う（ルートの `CLAUDE.md`「`.claude/` について」参照）
 
 ## pluginリリース時の規約
 

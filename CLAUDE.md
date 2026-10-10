@@ -19,3 +19,4 @@ Claude Code 用 Plugin Marketplace（`.claude/` チーム共有・統制にお�
   - `coding-standards.md` — コードファイル編集時の規約
 - rule / template 内で参照される `reports/...` や `research-for-local-RAG-for-cc/...` は別リポジトリのパスであり、このリポジトリには存在しない。
 - `commit-and-pr` / `orchestrate` skill は `disable-model-invocation: true`（ユーザーが明示的に呼び出す専用）。
+- **`plugins/` 配下の Plugin と `.claude/` 配下の skill / agent 等が同じ名前・内容で重複していても、両者の同期は作業指示者が行う。Claude は同期を気にしなくてよい**。`.claude/` 側はこのリポジトリで作業するための実行用、`plugins/` 側は配布用であり、版がずれていても Claude が揃えに行かない（`pre-compact` など）。

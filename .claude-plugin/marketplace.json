@@ -9,6 +9,11 @@
       "name": "statusline",
       "source": "./plugins/statusline",
       "description": "モデル・effort・コンテキスト使用率・レート制限・作業場所を複数行で表示するステータスライン"
+    },
+    {
+      "name": "pre-compact",
+      "source": "./plugins/pre-compact",
+      "description": "/compact または /clear の前に、終了方式の判定・未コミット変更の確認・継続情報の memory 退避を行い、次セッションで再開できる状態を整える skill"
     }
   ]
 }
