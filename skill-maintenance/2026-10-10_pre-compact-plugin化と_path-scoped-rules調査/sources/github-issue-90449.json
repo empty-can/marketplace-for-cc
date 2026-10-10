@@ -1,0 +1,125 @@
+{
+  "url": "https://api.github.com/repos/anthropics/claude-code/issues/90449",
+  "repository_url": "https://api.github.com/repos/anthropics/claude-code",
+  "labels_url": "https://api.github.com/repos/anthropics/claude-code/issues/90449/labels{/name}",
+  "comments_url": "https://api.github.com/repos/anthropics/claude-code/issues/90449/comments",
+  "events_url": "https://api.github.com/repos/anthropics/claude-code/issues/90449/events",
+  "html_url": "https://github.com/anthropics/claude-code/issues/90449",
+  "id": 5281915894,
+  "node_id": "I_kwDON91aY88AAAABOtOj9g",
+  "number": 90449,
+  "title": "[BUG] Subdirectory `CLAUDE.md` loads only via the `Read` tool — every other file access path silently skips it",
+  "user": {
+    "login": "gabgoss",
+    "id": 2829699,
+    "node_id": "MDQ6VXNlcjI4Mjk2OTk=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/2829699?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/gabgoss",
+    "html_url": "https://github.com/gabgoss",
+    "followers_url": "https://api.github.com/users/gabgoss/followers",
+    "following_url": "https://api.github.com/users/gabgoss/following{/other_user}",
+    "gists_url": "https://api.github.com/users/gabgoss/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/gabgoss/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/gabgoss/subscriptions",
+    "organizations_url": "https://api.github.com/users/gabgoss/orgs",
+    "repos_url": "https://api.github.com/users/gabgoss/repos",
+    "events_url": "https://api.github.com/users/gabgoss/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/gabgoss/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "labels": [
+    {
+      "id": 8190926409,
+      "node_id": "LA_kwDON91aY88AAAAB6DeeSQ",
+      "url": "https://api.github.com/repos/anthropics/claude-code/labels/bug",
+      "name": "bug",
+      "color": "FF6B80",
+      "default": true,
+      "description": "Something isn't working",
+      "archived_at": null,
+      "archived_by": null
+    },
+    {
+      "id": 8201030515,
+      "node_id": "LA_kwDON91aY88AAAAB6NHLcw",
+      "url": "https://api.github.com/repos/anthropics/claude-code/labels/has%20repro",
+      "name": "has repro",
+      "color": "ededed",
+      "default": false,
+      "description": "Has detailed reproduction steps",
+      "archived_at": null,
+      "archived_by": null
+    },
+    {
+      "id": 8201037318,
+      "node_id": "LA_kwDON91aY88AAAAB6NHmBg",
+      "url": "https://api.github.com/repos/anthropics/claude-code/labels/platform:windows",
+      "name": "platform:windows",
+      "color": "93A5FF",
+      "default": false,
+      "description": "Issue specifically occurs on Windows",
+      "archived_at": null,
+      "archived_by": null
+    },
+    {
+      "id": 8572719646,
+      "node_id": "LA_kwDON91aY88AAAAB_vlSHg",
+      "url": "https://api.github.com/repos/anthropics/claude-code/labels/area:core",
+      "name": "area:core",
+      "color": "ededed",
+      "default": false,
+      "description": "",
+      "archived_at": null,
+      "archived_by": null
+    }
+  ],
+  "state": "open",
+  "locked": false,
+  "assignees": [
+
+  ],
+  "milestone": null,
+  "comments": 0,
+  "created_at": "2026-08-28T20:14:24Z",
+  "updated_at": "2026-08-28T20:15:33Z",
+  "closed_at": null,
+  "assignee": null,
+  "author_association": "NONE",
+  "issue_field_values": [
+
+  ],
+  "type": null,
+  "active_lock_reason": null,
+  "sub_issues_summary": {
+    "total": 0,
+    "completed": 0,
+    "percent_completed": 0
+  },
+  "issue_dependencies_summary": {
+    "blocked_by": 0,
+    "total_blocked_by": 0,
+    "blocking": 0,
+    "total_blocking": 0
+  },
+  "body": "### Preflight Checklist\n\n- [x] I have searched [existing issues](https://github.com/anthropics/claude-code/issues?q=is%3Aissue%20state%3Aopen%20label%3Abug) and this hasn't been reported yet\n- [x] This is a single bug report (please file separate reports for different bugs)\n- [x] I am using the latest version of Claude Code\n\n### What's Wrong?\n\nThe documentation says subdirectory `CLAUDE.md` files \"are included when Claude reads files in\nthose subdirectories.\" Measured, the trigger is far narrower: **only the native `Read` tool\nloads them.**\n\nI tested 27 access methods, each against its own directory holding a uniquely-sentinelled\n`CLAUDE.md`. Four are positive.\n\n| Access method | Loads? |\n|---|---|\n| `Read` tool — absolute path, relative path, **nonexistent** path, or a file in a descendant directory | **yes** |\n| `Grep`, `Glob`, `Write`, `Edit` tools | no |\n| POSIX shell — `cat`, `sed -n`, `head`, `tail`, `awk`, `python`, `ls -la`, `grep`, `find`, `sed -i`, heredoc | no |\n| PowerShell — `Get-Content`, `Get-Content -TotalCount`, `Select-String`, `Get-ChildItem`, `[System.IO.File]::ReadAllText()`, `Set-Content` | no |\n| `cmd.exe` — `type` | no |\n\nTwo consequences of the mechanism, both measured:\n\n- **It is path resolution, not file access.** A `Read` of a file that *does not exist* still\n  injects the directory's `CLAUDE.md`. The call returns an error; the memory loads anyway.\n- **It is once per directory, per session.** A second `Read` of a different file in an\n  already-loaded directory injects nothing, so a single early shell read costs that directory's\n  memory for the whole session — and after `/compact` it only returns if some later call happens\n  to be a `Read`.\n\n**The failure is completely silent.** Every one of those 23 negative calls succeeds and returns\nexactly what was asked for. Nothing distinguishes *\"this directory has no `CLAUDE.md`\"* from\n*\"this directory's `CLAUDE.md` was never loaded, because the file was opened with `cat`.\"* The\nmodel then produces work that looks normal, having never seen the instructions meant to\nconstrain it, and a reviewer cannot tell from the output.\n\nPath-scoped `.claude/rules/` with `paths:` frontmatter behaves identically — same trigger, same\nsilence. Details in Additional Information.\n\n### What Should Happen?\n\nPer the documentation, opening a file in a subdirectory should load that subtree's `CLAUDE.md`\nregardless of which tool performs the read.\n\nConcretely, any one of these would resolve it, in my order of preference:\n\n1. **Resolve nested memory on any tool call that references a path inside the working\n   directory** — `Grep`, `Glob`, `Write`, `Edit`, and Bash commands whose arguments name a path.\n   Makes the documented behaviour true for every access method.\n2. **Extend the trigger to the remaining native tools only** (`Grep`, `Glob`, `Write`, `Edit`),\n   leaving shell commands out of scope. This needs no command-line parsing and still fixes\n   #63142 and the search-driven cases — probably the best effort-to-coverage ratio.\n3. **Document the actual trigger.** If the `Read`-only behaviour is intended, say so plainly on\n   the memory page, so users relying on per-package `CLAUDE.md` know what it depends on.\n\nIndependently of which lands: **a diagnostic would help.** Surfacing *\"N nested memory files\nwere discovered but not loaded this session\"* — in `/context`, or at session end — converts a\nsilent failure into a visible one. Today there is no way to tell from inside a session that this\nhappened.\n\n### Error Messages/Logs\n\n```shell\nThere is no error output — the silence IS the defect. Both calls below succeed.\n\n--- Bash tool: cat probe/sub/target.txt\nhello\n(no memory injected)\n\n--- Read tool: probe/sub/target.txt\n     1  hello\n<system-reminder>\nContents of /…/probe/sub/CLAUDE.md:\n# Sub\nSENTINEL-NESTED\n</system-reminder>\n\nSame file. Same directory. Same session. Same turn.\nThe only variable is which tool opened it.\n\n--- Read tool: probe/sub/does-not-exist.txt\nError: File does not exist.\n<system-reminder>\nContents of /…/probe/sub/CLAUDE.md:\n# Sub\nSENTINEL-NESTED\n</system-reminder>\n\nThe read fails; the memory loads anyway. The trigger is path resolution.\n```\n\n### Steps to Reproduce\n\n1. From any project root, create the fixture:\n\n   ```bash\n   mkdir -p probe/sub\n   printf '# Sub\\n\\nSENTINEL-NESTED\\n' > probe/sub/CLAUDE.md\n   printf 'hello\\n' > probe/sub/target.txt\n   ```\n\n2. Start a session rooted **above** `probe/`.\n\n3. Read the target with the **Bash** tool:\n\n   ```\n   cat probe/sub/target.txt\n   ```\n\n   → `hello` is returned. `SENTINEL-NESTED` is **not** injected.\n\n   On Windows, `Get-Content probe\\sub\\target.txt` gives the same result.\n\n4. Read the **same file** with the **`Read`** tool.\n\n   → `hello` is returned. `SENTINEL-NESTED` **is** injected.\n\nSteps 3 and 4 differ only in tool identity — same file, same path, same session.\n\n**To confirm the mechanism is path resolution, not file access**, `Read` a path that does not\nexist inside that directory:\n\n```\nRead probe/sub/does-not-exist.txt\n```\n\n→ the call errors, and `SENTINEL-NESTED` injects anyway.\n\n**To see the `Grep` / `Glob` / `Write` / `Edit` cells**, run each against a **fresh**\nsentinelled directory. Loading is once-per-directory-per-session, so reusing `probe/sub` after\nstep 4 yields a false negative:\n\n```bash\nfor d in grep glob write edit; do\n  mkdir -p \"probe/$d\"\n  printf \"# %s\\n\\nSENTINEL-%s\\n\" \"$d\" \"$d\" > \"probe/$d/CLAUDE.md\"\n  printf 'alpha\\nbravo\\n' > \"probe/$d/target.txt\"\ndone\n```\n\n`Edit` needs one extra step, because it normally requires a prior `Read` that would contaminate\nthe cell: use the `Write` tool to create `probe/edit/new.txt` first. `Write` satisfies the\nread-prerequisite without a `Read` (it returns *\"file state is current in your context\"*), so\n`Edit` can then run in isolation. Neither injects.\n\n### Claude Model\n\nOpus\n\n### Is this a regression?\n\nNo, this never worked\n\n### Last Working Version\n\nN/A — not a regression.\n\n### Claude Code Version\n\n2.1.250 (Claude Code)\n\n### Platform\n\nAnthropic API\n\n### Operating System\n\nWindows\n\n### Terminal/Shell\n\nVS Code integrated terminal\n\n### Additional Information\n\n### Full access-method matrix — 27 cells, 4 positive\n\nEach cell is an independent directory with a uniquely-sentinelled `CLAUDE.md`, so no result can\nleak into another via the once-per-directory dedup.\n\n| Method | Dialect | Result | Note |\n|---|---|---|---|\n| `Read` — absolute path | native | **loads** | the documented behaviour |\n| `Read` — relative path | native | **loads** | path form is irrelevant |\n| `Read` — nonexistent file | native | **loads** | returns an error; memory injects anyway |\n| `Read` — file 2 dirs below the `CLAUDE.md` | native | **loads** | resolution walks the ancestor chain |\n| `Read` — 2nd file, same dir | native | silent | dedup, once per directory per session |\n| `Read` — the `CLAUDE.md` itself | native | silent | returned as ordinary file content |\n| `Grep` tool (`output_mode: content`) | native | silent | returned the file's own lines |\n| `Glob` tool | native | silent | returned the `CLAUDE.md` path itself |\n| `Write` tool | native | silent | |\n| `Edit` tool | native | silent | reached in isolation via `Write`→`Edit` |\n| `cat` | POSIX | silent | |\n| `sed -n '1,2p'` | POSIX | silent | |\n| `head -2` | POSIX | silent | |\n| `tail -2` | POSIX | silent | |\n| `awk 'NR<=2'` | POSIX | silent | |\n| `python -c \"open(...).read()\"` | POSIX | silent | full path present in the command string |\n| `ls -la` | POSIX | silent | output prints `CLAUDE.md` by name |\n| `grep -n` | POSIX | silent | |\n| `find -type f` | POSIX | silent | output prints `CLAUDE.md` by name |\n| `sed -i` | POSIX | silent | in-place edit |\n| `cat > f <<EOF` | POSIX | silent | heredoc rewrite |\n| `Get-Content` | PowerShell | silent | |\n| `Get-Content -TotalCount 2` | PowerShell | silent | |\n| `Select-String` | PowerShell | silent | |\n| `Get-ChildItem` | PowerShell | silent | lists `CLAUDE.md` by name |\n| `[System.IO.File]::ReadAllText()` | PowerShell | silent | direct .NET read, bypassing cmdlets |\n| `Set-Content` | PowerShell | silent | |\n| `type` | cmd.exe | silent | |\n\n### Controls\n\n- **Same-file within-subject control.** One directory's file was read first with `cat`, then\n  with `Read`. The `cat` injected nothing; the immediately following `Read` fired. Tool identity\n  is the only variable — same file, same path, same session, same turn.\n- **\"Content reaching context\" is ruled out.** `Grep` with `output_mode: content` returned the\n  target file's own lines and injected nothing.\n- **\"Surfacing the path\" is ruled out.** `Glob`, `ls -la`, `find` and `Get-ChildItem` each\n  printed `CLAUDE.md` by name and injected nothing.\n- **`Edit` was measured, not inferred**, via the `Write`→`Edit` path described in Steps to\n  Reproduce.\n\n### Path-scoped rules have the same trigger\n\nVerified against a real project's live, launch-discovered rules using four independently-scoped\nbracketed pairs. Each ran its negative first, then a `Read` against a file matching the *same*\n`paths:` pattern — proving the rule was still live and the negative genuine.\n\n| `paths:` scope | Negative method | Negative | Then `Read`, same pattern |\n|---|---|---|---|\n| `.claude/agents/**` | PowerShell `Get-Content` | no rule | **3 rules injected** |\n| `.claude/skills/**` | `Grep` tool | no rule | **1 rule injected** |\n| `.claude/rules/**` | Bash `awk` over all 10 rule files | no rule | **2 rules injected** |\n| `plugins/**` | Bash `head -5` | no rule | **3 rules injected** |\n\nOne `Read` pulled in three rules at once; the same file opened with `Get-Content` pulled in none.\n\nThe docs make the same tool-agnostic promise here — *\"Rules load into context every session or\nwhen matching files are opened\"* and *\"Path-scoped rules trigger when Claude reads files matching\nthe pattern, not on every tool use.\"* **A fix covering `CLAUDE.md` but not `paths:`-scoped rules\nwould leave the documented remedy for oversized `CLAUDE.md` files still broken.**\n\nTwo rule-specific differences worth knowing: rules dedup **once per rule** per session (not per\nfile or per pattern), and rule discovery is **launch-time** — creating or editing a rule\nmid-session does nothing until restart, whereas nested `CLAUDE.md` is discovered live.\n\n### Why this bites in ordinary sessions\n\nCommon, entirely reasonable workflows never issue a `Read` against a given directory:\n\n- **Creating a new file** — nothing to read first, so conventions for new files in that subtree\n  never load. Already filed as #63142.\n- **Search-driven work** — `Grep` returns matching lines with enough context that no `Read`\n  follows.\n- **Listing then writing** — `Glob` to survey, `Write` to add. No `Read` in the sequence.\n- **Any shell read** — large files, line ranges, pipelines, or a quick `cat`.\n- **Monorepos** — per-package `CLAUDE.md` is the documented mechanism for scoping conventions to\n  a subtree; whether it loads depends on an implementation detail of how Claude happened to open\n  a file.\n\n### Documentation\n\nNote that <https://docs.anthropic.com/en/docs/claude-code/memory> and\n<https://code.claude.com/docs/en/memory> are byte-identical (`md5 77f47dc4…`) — one document, not\ntwo sources. The page has zero occurrences of \"auto mode\", and its only two `Read tool` mentions\nare unrelated (HTML-comment stripping; a pre-v2.1.207 glob-bracket bug). Nothing states that\nloading depends on which tool performs the read.\n\n### Related issues\n\n| Issue | State | Relationship |\n|---|---|---|\n| [#63142](https://github.com/anthropics/claude-code/issues/63142) | closed | The `Write` cell reported on its own. Same root cause via new-file creation. Its premise — *\"not an issue for editing existing files, since Claude always reads a file before modifying it\"* — holds only while reads go through the `Read` tool. |\n| [#24987](https://github.com/anthropics/claude-code/issues/24987) | — | Reports the `Read` path *also* failing in the VS Code extension. If accurate, a stricter failure than measured here on 2.1.250. |\n| [#48031](https://github.com/anthropics/claude-code/issues/48031) | — | `CLAUDE_CODE_DISABLE_ATTACHMENTS=1` silently disables subdirectory injection — a second silent-disable path. |\n| [#2571](https://github.com/anthropics/claude-code/issues/2571), [#3529](https://github.com/anthropics/claude-code/issues/3529), [#3103](https://github.com/anthropics/claude-code/issues/3103), [#18098](https://github.com/anthropics/claude-code/issues/18098) | mixed | Long-running \"nested CLAUDE.md doesn't load\" reports going back to 2025. Several are plausibly this bug seen from the user side without the trigger identified — itself evidence the silent failure mode is hard to diagnose. |\n\n### Limits of this report\n\n- **PowerShell ran via `powershell.exe` launched from the Bash tool**, as this build exposes no\n  separate PowerShell tool — so tool identity at the harness boundary is still `Bash`. Given that\n  all three dialects and every native non-`Read` tool are negative, a first-class PowerShell\n  executor should behave the same, but that specific configuration is inference.\n- **Only Windows PowerShell 5.1 was tested**, not `pwsh` 7.x.\n- **`Edit` was measured through the `Write`→`Edit` path**, the only route to `Edit` without a\n  contaminating prior `Read`.\n- **`CLAUDE.local.md` was not tested separately.** The docs describe it as loading by the same\n  mechanism; I did not confirm it shares the trigger.",
+  "closed_by": null,
+  "reactions": {
+    "url": "https://api.github.com/repos/anthropics/claude-code/issues/90449/reactions",
+    "total_count": 1,
+    "+1": 1,
+    "-1": 0,
+    "laugh": 0,
+    "hooray": 0,
+    "confused": 0,
+    "heart": 0,
+    "rocket": 0,
+    "eyes": 0
+  },
+  "timeline_url": "https://api.github.com/repos/anthropics/claude-code/issues/90449/timeline",
+  "performed_via_github_app": null,
+  "state_reason": null,
+  "pinned_comment": null
+}

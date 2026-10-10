@@ -1,0 +1,136 @@
+{
+  "url": "https://api.github.com/repos/anthropics/claude-code/issues/90450",
+  "repository_url": "https://api.github.com/repos/anthropics/claude-code",
+  "labels_url": "https://api.github.com/repos/anthropics/claude-code/issues/90450/labels{/name}",
+  "comments_url": "https://api.github.com/repos/anthropics/claude-code/issues/90450/comments",
+  "events_url": "https://api.github.com/repos/anthropics/claude-code/issues/90450/events",
+  "html_url": "https://github.com/anthropics/claude-code/issues/90450",
+  "id": 5281940218,
+  "node_id": "I_kwDON91aY88AAAABOtQC-g",
+  "number": 90450,
+  "title": "[BUG] Auto Mode's Bash-first instruction silently disables nested CLAUDE.md and path-scoped rules",
+  "user": {
+    "login": "gabgoss",
+    "id": 2829699,
+    "node_id": "MDQ6VXNlcjI4Mjk2OTk=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/2829699?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/gabgoss",
+    "html_url": "https://github.com/gabgoss",
+    "followers_url": "https://api.github.com/users/gabgoss/followers",
+    "following_url": "https://api.github.com/users/gabgoss/following{/other_user}",
+    "gists_url": "https://api.github.com/users/gabgoss/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/gabgoss/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/gabgoss/subscriptions",
+    "organizations_url": "https://api.github.com/users/gabgoss/orgs",
+    "repos_url": "https://api.github.com/users/gabgoss/repos",
+    "events_url": "https://api.github.com/users/gabgoss/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/gabgoss/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "labels": [
+    {
+      "id": 8190926409,
+      "node_id": "LA_kwDON91aY88AAAAB6DeeSQ",
+      "url": "https://api.github.com/repos/anthropics/claude-code/labels/bug",
+      "name": "bug",
+      "color": "FF6B80",
+      "default": true,
+      "description": "Something isn't working",
+      "archived_at": null,
+      "archived_by": null
+    },
+    {
+      "id": 8201030515,
+      "node_id": "LA_kwDON91aY88AAAAB6NHLcw",
+      "url": "https://api.github.com/repos/anthropics/claude-code/labels/has%20repro",
+      "name": "has repro",
+      "color": "ededed",
+      "default": false,
+      "description": "Has detailed reproduction steps",
+      "archived_at": null,
+      "archived_by": null
+    },
+    {
+      "id": 8201037318,
+      "node_id": "LA_kwDON91aY88AAAAB6NHmBg",
+      "url": "https://api.github.com/repos/anthropics/claude-code/labels/platform:windows",
+      "name": "platform:windows",
+      "color": "93A5FF",
+      "default": false,
+      "description": "Issue specifically occurs on Windows",
+      "archived_at": null,
+      "archived_by": null
+    },
+    {
+      "id": 8572664217,
+      "node_id": "LA_kwDON91aY88AAAAB_vh5mQ",
+      "url": "https://api.github.com/repos/anthropics/claude-code/labels/area:tools",
+      "name": "area:tools",
+      "color": "ededed",
+      "default": false,
+      "description": "",
+      "archived_at": null,
+      "archived_by": null
+    },
+    {
+      "id": 8572719646,
+      "node_id": "LA_kwDON91aY88AAAAB_vlSHg",
+      "url": "https://api.github.com/repos/anthropics/claude-code/labels/area:core",
+      "name": "area:core",
+      "color": "ededed",
+      "default": false,
+      "description": "",
+      "archived_at": null,
+      "archived_by": null
+    }
+  ],
+  "state": "open",
+  "locked": false,
+  "assignees": [
+
+  ],
+  "milestone": null,
+  "comments": 21,
+  "created_at": "2026-08-28T20:18:00Z",
+  "updated_at": "2026-10-08T16:37:35Z",
+  "closed_at": null,
+  "assignee": null,
+  "author_association": "NONE",
+  "issue_field_values": [
+
+  ],
+  "type": null,
+  "active_lock_reason": null,
+  "sub_issues_summary": {
+    "total": 0,
+    "completed": 0,
+    "percent_completed": 0
+  },
+  "issue_dependencies_summary": {
+    "blocked_by": 0,
+    "total_blocked_by": 0,
+    "blocking": 0,
+    "total_blocking": 0
+  },
+  "body": "### Preflight Checklist\n\n- [x] I have searched [existing issues](https://github.com/anthropics/claude-code/issues?q=is%3Aissue%20state%3Aopen%20label%3Abug) and this hasn't been reported yet\n- [x] This is a single bug report (please file separate reports for different bugs)\n- [x] I am using the latest version of Claude Code\n\n### What's Wrong?\n\nAuto Mode injects an instruction directing file work through Bash instead of the dedicated\ntools. Nested `CLAUDE.md` and path-scoped `.claude/rules/` load **only** via the native `Read`\ntool. So following the Auto Mode instruction guarantees neither ever loads.\n\n**The injected instruction**, quoted verbatim from the live context of the Auto Mode session in\nwhich I ran the measurements:\n\n> While auto mode is active:\n>\n> Do your work through the Bash tool wherever it can accomplish the job: read files with cat,\n> head, or sed -n, search with grep and find, and make file changes with sed, heredocs, or short\n> scripts, rather than using the dedicated Read, Edit, or Write tools. Fall back to a dedicated\n> tool only when Bash genuinely cannot do the job.\n\n**Every verb named there is measured non-triggering.** I tested 27 access methods, each against\nits own directory holding a uniquely-sentinelled `CLAUDE.md`:\n\n| Access method | Loads nested memory? |\n|---|---|\n| `Read` tool | **yes** — the only trigger that exists |\n| `cat`, `head`, `sed -n`, `grep`, `find`, `sed -i`, heredoc | no — *every verb the instruction names* |\n| `tail`, `awk`, `python`, `ls -la` | no |\n| PowerShell `Get-Content`, `Select-String`, `Get-ChildItem`, `Set-Content`, `[IO.File]::ReadAllText` | no |\n| `cmd.exe type` | no |\n| `Grep`, `Glob`, `Write`, `Edit` tools | no |\n\nThe instruction steers explicitly away from `Read` — the one tool that loads nested memory — and\ntoward six verbs that do not. **The two features are mutually exclusive by construction:**\n\n- A session that follows the Auto Mode instruction gets no nested `CLAUDE.md` and no path-scoped\n  rules.\n- A session that loads nested `CLAUDE.md` is one that ignored the Auto Mode instruction.\n\nThere is no configuration in which both work as documented.\n\n**It is silent, and it is sticky.** The Bash call succeeds and returns exactly the expected\ncontents; nothing indicates the governing instructions were skipped. Loading is once per\ndirectory per session, so a single early Bash read costs that directory's memory for the whole\nsession — and after `/compact`, anything dropped never comes back, because the re-read is also a\nBash call.\n\nMeasured impact in a real repo: one `Read` of a file under `.claude/agents/` pulled in three\npath-scoped rules at once. The same file opened with `Get-Content` pulled in none.\n\n### What Should Happen?\n\nAuto Mode should not silently disable a documented memory feature. Any of these resolves it, in\nmy order of preference:\n\n1. **Resolve nested memory for Bash commands that reference paths inside the working directory.**\n   Closes the gap at its source and makes the documented behaviour true for any access method.\n   Most invasive.\n2. **Exempt file reads from the Bash-first steering when the target subtree contains a nested\n   `CLAUDE.md` or a matching path-scoped rule.** Keeps Auto Mode's token savings everywhere the\n   gap does not exist.\n3. **Soften the instruction** so `Read` stays the default for reading *files in subdirectories*,\n   with Bash preferred for search, pipelines, and bulk edits — which is where its savings\n   actually come from.\n4. **At minimum, document the interaction.** The Auto Mode page currently does not mention the\n   Bash-first instruction at all (see Additional Information), so there is no way for a user with\n   per-package `CLAUDE.md` to learn that it stops applying.\n\nA diagnostic would help independently of which fix lands: surfacing *\"N nested memory files were\ndiscovered but not loaded this session\"* would make the failure visible instead of silent.\n\n### Error Messages/Logs\n\n```shell\nThere is no error output — the silence IS the defect. Every call below succeeds.\n\nAuto Mode instruction, verbatim from live session context:\n\n    While auto mode is active:\n\n    Do your work through the Bash tool wherever it can accomplish the job: read\n    files with cat, head, or sed -n, search with grep and find, and make file\n    changes with sed, heredocs, or short scripts, rather than using the dedicated\n    Read, Edit, or Write tools. Fall back to a dedicated tool only when Bash\n    genuinely cannot do the job.\n\nWhat that instruction produces (step 1) vs. what the docs describe (step 2):\n\n--- Bash tool: cat probe/sub/target.txt          <-- what Auto Mode does\nhello\n(no memory injected)\n\n--- Read tool: probe/sub/target.txt              <-- what the docs describe\n     1  hello\n<system-reminder>\nContents of /…/probe/sub/CLAUDE.md:\n# Sub\nSENTINEL-NESTED\n</system-reminder>\n\nSame file. Same directory. Same session. Same turn.\nThe only variable is which tool opened it.\n```\n\n### Steps to Reproduce\n\n1. Enable Auto Mode.\n\n2. From any project root, create the fixture:\n\n   ```bash\n   mkdir -p probe/sub\n   printf '# Sub\\n\\nSENTINEL-NESTED\\n' > probe/sub/CLAUDE.md\n   printf 'hello\\n' > probe/sub/target.txt\n   ```\n\n3. Start a session rooted **above** `probe/`.\n\n4. Ask Claude to read `probe/sub/target.txt`. Under the Auto Mode instruction it will reach for\n   Bash — `cat probe/sub/target.txt`.\n\n   → `hello` is returned. `SENTINEL-NESTED` is **not** injected. The instructions meant to\n   govern that subtree never entered context.\n\n5. Now force the dedicated tool — read the **same file** with the **`Read`** tool.\n\n   → `hello` is returned. `SENTINEL-NESTED` **is** injected.\n\nStep 4 is what an Auto Mode session does. Step 5 is what the documentation describes. They\ndiffer only in tool identity.\n\n**To see the same effect on path-scoped rules**, which is the higher-impact half: create\n`.claude/rules/probe.md` with `paths: src/**` and a distinctive instruction in the body, restart\nthe session (rule discovery is launch-time), then open a file under `src/` with `cat` — the rule\ndoes not fire. Open it with `Read` — it does. Note that rules dedup once per rule per session,\nso run the negative first.\n\n**Windows:** substitute `Get-Content probe\\sub\\target.txt` at step 4 — same result.\n\n### Claude Model\n\nOpus\n\n### Is this a regression?\n\nYes, this worked in a previous version\n\n### Last Working Version\n\n_No response_\n\n### Claude Code Version\n\n2.1.250 (Claude Code)\n\n### Platform\n\nAnthropic API\n\n### Operating System\n\nWindows\n\n### Terminal/Shell\n\nVS Code integrated terminal\n\n### Additional Information\n\n## Is this a regression?\n\n**Yes**, with a caveat worth stating plainly: the `Read`-only load behaviour is long-standing\n(complaints date to 2025), but the Bash-first steering that collides with it arrived with the\nAuto Mode rollout. I could not pin the exact version myself. #90088 independently marks the\nsteering a regression, and #86478 references an auto-mode rollout dated 2026-08-14.\n\n### The documentation gap is twofold\n\n| Page | Finding |\n|---|---|\n| `docs/en/memory` | **Zero occurrences of \"auto mode.\"** Says subdirectory files load \"when Claude reads files in those directories\" — tool-agnostic prose for behaviour that is `Read`-exclusive. Its only two `Read tool` mentions are unrelated (HTML-comment stripping; a pre-v2.1.207 glob-bracket bug). |\n| `docs.anthropic.com/…/memory` | Byte-identical to the above (`md5 77f47dc4…`). Not a second source. |\n| `docs/en/auto-mode-config` | Describes Auto Mode **exclusively as a permission classifier** — allow / soft_deny / hard_deny, trusted repos and domains. **The Bash-first instruction is not documented anywhere on it.** The one memory-adjacent sentence points the other way: *\"The classifier reads the same CLAUDE.md content Claude itself loads.\"* |\n\nSo a user reading the Auto Mode page learns it changes permission prompting. Nothing tells them\nit also changes which tools Claude uses — which is the actual cause of this bug.\n\n### Full access-method matrix — 27 cells, 4 positive\n\nEach cell is an independent directory with a uniquely-sentinelled `CLAUDE.md`. Rows marked ★ are\nverbs the Auto Mode instruction names explicitly.\n\n| Method | Dialect | Result |\n|---|---|---|\n| `Read` — absolute path | native | **loads** |\n| `Read` — relative path | native | **loads** |\n| `Read` — nonexistent file | native | **loads** *(returns an error; memory injects anyway)* |\n| `Read` — file 2 dirs below the `CLAUDE.md` | native | **loads** |\n| `Read` — 2nd file, same dir | native | silent *(dedup, once per directory per session)* |\n| `Grep` tool | native | silent |\n| `Glob` tool | native | silent |\n| `Write` tool | native | silent |\n| `Edit` tool | native | silent |\n| ★ `cat` | POSIX | silent |\n| ★ `sed -n '1,2p'` | POSIX | silent |\n| ★ `head -2` | POSIX | silent |\n| ★ `grep -n` | POSIX | silent |\n| ★ `find -type f` | POSIX | silent |\n| ★ `sed -i` | POSIX | silent |\n| ★ `cat > f <<EOF` (heredoc) | POSIX | silent |\n| `tail -2` | POSIX | silent |\n| `awk 'NR<=2'` | POSIX | silent |\n| `python -c \"open(...).read()\"` | POSIX | silent |\n| `ls -la` | POSIX | silent *(prints `CLAUDE.md` by name)* |\n| `Get-Content` | PowerShell | silent |\n| `Get-Content -TotalCount 2` | PowerShell | silent |\n| `Select-String` | PowerShell | silent |\n| `Get-ChildItem` | PowerShell | silent |\n| `[System.IO.File]::ReadAllText()` | PowerShell | silent |\n| `Set-Content` | PowerShell | silent |\n| `type` | cmd.exe | silent |\n\nAll seven starred verbs — the complete set the instruction names — are non-triggering.\n\n### Controls\n\n- **Same-file within-subject control.** One directory's file was read first with `cat`, then\n  with `Read`. The `cat` injected nothing; the immediately following `Read` fired. Tool identity\n  is the only variable.\n- **Mechanism isolation.** A `Read` of a *nonexistent* file still injects the directory's\n  `CLAUDE.md` — so the trigger is the `Read` tool resolving its `file_path` argument, evaluated\n  independently of whether anything is read.\n- **Rival explanations ruled out.** \"Content reaching context\" — refuted by `Grep`, which\n  returned the file's own lines and injected nothing. \"Surfacing the path\" — refuted by `Glob`,\n  `ls -la`, `find` and `Get-ChildItem`, all of which printed `CLAUDE.md` by name and injected\n  nothing.\n\n### Path-scoped rules — the higher-impact half\n\nFour independently-scoped bracketed pairs against a real project's live rules. Each ran its\nnegative first, then a `Read` against a file matching the *same* `paths:` pattern, proving the\nrule was still live and the negative genuine:\n\n| `paths:` scope | Negative method | Negative | Then `Read`, same pattern |\n|---|---|---|---|\n| `.claude/agents/**` | PowerShell `Get-Content` | no rule | **3 rules injected** |\n| `.claude/skills/**` | `Grep` tool | no rule | **1 rule injected** |\n| `.claude/rules/**` | Bash `awk` over all 10 rule files | no rule | **2 rules injected** |\n| `plugins/**` | Bash `head -5` | no rule | **3 rules injected** |\n\nThis matters because path-scoped rules are the documented answer to *\"my CLAUDE.md is too\nlarge\"* — so in Auto Mode the recommended remedy for context bloat is inert too. Rules also\ndedup **once per rule** per session, so a rule that fires early cannot re-assert itself later\nwhen the model actually reaches the files it governs.\n\n### Related issues\n\n| Issue | State | Relationship |\n|---|---|---|\n| [#90088](https://github.com/anthropics/claude-code/issues/90088) | open | **The symptom, independently observed.** *\"Claude Code is not using native tools like edit and others when set to Auto mode… you should see it uses python or other tools to edit.\"* Filed on macOS / Anthropic API / 2.1.247 — a different platform, so the steering reproduces broadly. Does not connect it to memory or rules. **Worth cross-linking.** |\n| [#63142](https://github.com/anthropics/claude-code/issues/63142) | closed | Same read-gated load reached via new-file creation. Its premise — *\"not an issue for editing existing files, since Claude always reads a file before modifying it\"* — is exactly what Auto Mode invalidates. **Worth cross-linking.** |\n| [#48031](https://github.com/anthropics/claude-code/issues/48031) | — | `CLAUDE_CODE_DISABLE_ATTACHMENTS=1` silently disables subdirectory injection — a second silent-disable path. |\n| [#2571](https://github.com/anthropics/claude-code/issues/2571), [#3529](https://github.com/anthropics/claude-code/issues/3529), [#3103](https://github.com/anthropics/claude-code/issues/3103), [#18098](https://github.com/anthropics/claude-code/issues/18098), [#24987](https://github.com/anthropics/claude-code/issues/24987) | mixed | Long-running \"nested CLAUDE.md doesn't load\" reports. Several are plausibly the underlying defect seen from the user side without the trigger identified. |\n\n### Limits of this report\n\n- **PowerShell ran via `powershell.exe` launched from the Bash tool**, as this build exposes no\n  separate PowerShell tool — so tool identity at the harness boundary is still `Bash`. Given that\n  all three dialects and every native non-`Read` tool are negative, a first-class PowerShell\n  executor should behave the same, but that configuration is inference.\n- **Only Windows PowerShell 5.1 was tested**, not `pwsh` 7.x.\n- **`Edit` was measured through the `Write`→`Edit` path** — the only route to `Edit` without a\n  contaminating prior `Read`, since `Write` satisfies the read-prerequisite without triggering.\n- **I did not bisect the regression window** for the Auto Mode instruction itself.",
+  "closed_by": null,
+  "reactions": {
+    "url": "https://api.github.com/repos/anthropics/claude-code/issues/90450/reactions",
+    "total_count": 48,
+    "+1": 48,
+    "-1": 0,
+    "laugh": 0,
+    "hooray": 0,
+    "confused": 0,
+    "heart": 0,
+    "rocket": 0,
+    "eyes": 0
+  },
+  "timeline_url": "https://api.github.com/repos/anthropics/claude-code/issues/90450/timeline",
+  "performed_via_github_app": null,
+  "state_reason": null,
+  "pinned_comment": null
+}

@@ -1,0 +1,114 @@
+{
+  "url": "https://api.github.com/repos/anthropics/claude-code/issues/93706",
+  "repository_url": "https://api.github.com/repos/anthropics/claude-code",
+  "labels_url": "https://api.github.com/repos/anthropics/claude-code/issues/93706/labels{/name}",
+  "comments_url": "https://api.github.com/repos/anthropics/claude-code/issues/93706/comments",
+  "events_url": "https://api.github.com/repos/anthropics/claude-code/issues/93706/events",
+  "html_url": "https://github.com/anthropics/claude-code/issues/93706",
+  "id": 5428395953,
+  "node_id": "I_kwDON91aY88AAAABQ46_sQ",
+  "number": 93706,
+  "title": "Auto mode steers the model to Bash, which cuts path-scoped rules off at the knees",
+  "user": {
+    "login": "Dekadinious",
+    "id": 37292177,
+    "node_id": "MDQ6VXNlcjM3MjkyMTc3",
+    "avatar_url": "https://avatars.githubusercontent.com/u/37292177?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/Dekadinious",
+    "html_url": "https://github.com/Dekadinious",
+    "followers_url": "https://api.github.com/users/Dekadinious/followers",
+    "following_url": "https://api.github.com/users/Dekadinious/following{/other_user}",
+    "gists_url": "https://api.github.com/users/Dekadinious/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/Dekadinious/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/Dekadinious/subscriptions",
+    "organizations_url": "https://api.github.com/users/Dekadinious/orgs",
+    "repos_url": "https://api.github.com/users/Dekadinious/repos",
+    "events_url": "https://api.github.com/users/Dekadinious/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/Dekadinious/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "labels": [
+    {
+      "id": 8190926413,
+      "node_id": "LA_kwDON91aY88AAAAB6DeeTQ",
+      "url": "https://api.github.com/repos/anthropics/claude-code/labels/duplicate",
+      "name": "duplicate",
+      "color": "888888",
+      "default": true,
+      "description": "This issue or pull request already exists",
+      "archived_at": null,
+      "archived_by": null
+    },
+    {
+      "id": 8572719646,
+      "node_id": "LA_kwDON91aY88AAAAB_vlSHg",
+      "url": "https://api.github.com/repos/anthropics/claude-code/labels/area:core",
+      "name": "area:core",
+      "color": "ededed",
+      "default": false,
+      "description": "",
+      "archived_at": null,
+      "archived_by": null
+    },
+    {
+      "id": 8697783922,
+      "node_id": "LA_kwDON91aY88AAAACBm2mcg",
+      "url": "https://api.github.com/repos/anthropics/claude-code/labels/area:bash",
+      "name": "area:bash",
+      "color": "ededed",
+      "default": false,
+      "description": null,
+      "archived_at": null,
+      "archived_by": null
+    }
+  ],
+  "state": "open",
+  "locked": false,
+  "assignees": [
+
+  ],
+  "milestone": null,
+  "comments": 1,
+  "created_at": "2026-09-11T19:52:25Z",
+  "updated_at": "2026-09-22T16:59:42Z",
+  "closed_at": null,
+  "assignee": null,
+  "author_association": "NONE",
+  "issue_field_values": [
+
+  ],
+  "type": null,
+  "active_lock_reason": null,
+  "sub_issues_summary": {
+    "total": 0,
+    "completed": 0,
+    "percent_completed": 0
+  },
+  "issue_dependencies_summary": {
+    "blocked_by": 0,
+    "total_blocked_by": 0,
+    "blocking": 0,
+    "total_blocking": 0
+  },
+  "body": "## What happens\n\nPath-scoped rules in `.claude/rules/` load on the Read tool and nothing else. Auto mode injects a system instruction telling the model to prefer Bash for file work:\n\n> Do your work through the Bash tool wherever it can accomplish the job: read files with cat, head, or sed -n, search with grep and find, and make file changes with sed, heredocs, or short scripts, rather than using the dedicated Read, Edit, or Write tools. Fall back to a dedicated tool only when Bash genuinely cannot do the job.\n\nRead is the only thing that triggers a path-scoped rule, and auto mode pushes the model away from Read. So the rules mostly don't fire. I have a repo with five path-scoped rules covering migrations, tests, an API tier, an SDK and a dashboard. Across a long auto mode session not one of them loaded while the model worked on files they cover.\n\nThe read-only half of this is already reported in #23478, #63142, #16853 and #38487. What I haven't seen filed is how it interacts with auto mode. #38487 asked for Write and Edit to load rules too and was closed as stale. In auto mode that fix wouldn't have helped much anyway, because the model is being told not to use Write and Edit either.\n\n## This looks like nobody joined the two up\n\nPath-scoped rules shipped first and were already being bug-reported while auto mode was still a research preview. Auto mode then became the default permission mode for Pro, Max and Team on 14 August 2026. The rules feature itself has not changed since, though the conditions it was built for no longer hold.\n\nRules were designed around a normal working flow where the model reads a file before editing it. Read is a fair proxy for \"about to work in this area\" when that is how the session goes. Auto mode removed the reason to ever call Read, because with permissions auto-granted the friction that made Read attractive is gone and Bash does more per call. Reasonable on its own. It just happens to remove the only trigger the rules feature has.\n\nI don't think anyone did this on purpose. From outside it looks like two features built against different assumptions, with nothing in between them to catch that one had switched the other off. The switch-off arrived with a change of default, so it isn't limited to people who went looking for an unusual setting. If you're on Pro, Max or Team and you have not changed anything, this is your configuration.\n\n## Why this is worth fixing rather than working around\n\nPath-scoped rules are the most useful thing in the whole configuration surface, at least for the way I work. A monolithic CLAUDE.md goes stale and burns context on instructions that have nothing to do with whatever you're doing today. Splitting it so that the migration rules turn up when you touch migrations, and the test rules turn up when you touch tests, is the difference between a convention the model follows and one it has technically been told about. I have rules carrying things that are genuinely expensive to get wrong: a migration runner that matches on filename with no checksum, a tenancy gate blind to every query idiom but one. Another covers a cookie prefix that the CDN drops silently if you name it wrong. None of that is guessable from the code.\n\nThose are the rules currently sitting inert.\n\nAuto mode is also where there is least human oversight per action. Nobody is reading each diff as it lands, so a standing convention is doing more work there than anywhere else, and that is exactly where it is least likely to be in context.\n\nNothing warns you that a rule did not load. The model writes something that breaks a documented convention, and you find out at review, or when the build goes red.\n\n## Reproduction\n\nFour probes in one session, same repo, auto mode.\n\n| What I did | Rule scope | Loaded? |\n| --- | --- | --- |\n| Bash `head` on a file under `db/migrations/` | `db/migrations/**` | no |\n| Bash write to a file under `sdk/src/` | `sdk/**` | no |\n| Write tool creating that same path | `sdk/**` | no |\n| Read tool on a path under `db/migrations/` | `db/migrations/**` | yes |\n\nOn the fourth I pointed Read at a file that does not exist. The read failed with \"File does not exist\" and the rule loaded anyway. So the trigger is a glob match against the tool's `file_path` argument, evaluated before the read runs. Bash never presents a `file_path` argument, so nothing matches and nothing loads.\n\nSteps:\n\n1. Create `.claude/rules/example.md` with `paths: [\"src/thing/**\"]` in the frontmatter and some text in the body.\n2. Start a session in auto mode.\n3. `cat src/thing/whatever.ts` through Bash. The rule does not load.\n4. Edit the same file with `sed -i` or a heredoc. The rule does not load.\n5. Read the same path with the Read tool. The rule loads straight away.\n\n## What I think the fix is\n\nRules should key on the path being touched rather than on which tool touched it. Bash commands that name a path under a rule's glob should count, whether that is `cat`, `sed -i`, a heredoc redirect or a short python script. Write and Edit should count too, which is what #38487 asked for.\n\nIf parsing paths out of arbitrary Bash isn't realistic, then auto mode should stop steering the model away from the tools that do work. Right now the two features pull in opposite directions, and the one that loses is the one users are told to put their project conventions in.\n\nRules already deduplicate. In my session a rule loaded once and did not reload when the same area was touched again, so matching on more tools would not mean the same rule getting injected over and over.\n\n## Why a hook is not an answer\n\nThe usual workaround suggested for the Bash side of this is a PreToolUse hook that intercepts Bash and either blocks it or injects the rule. That works, and I'll probably do it, but it means hand-building the trigger for a first-party feature whose whole promise is that the harness puts the right convention in front of the model at the right time. If I have to supply the trigger myself the feature isn't doing its job, and because it still looks like it is, you end up building a project on a guarantee that isn't there.\n\n## Environment\n\n- Claude Code CLI, auto mode (`skipDangerousModePermissionPrompt: true` in settings)\n- Project rules in `.claude/rules/*.md` with `paths:` frontmatter\n- Five rules, globs covering `db/migrations/**`, `**/*.test.*`, `src/api/**`, `sdk/**`, `dashboard/**`\n\n## Related\n\n- #23478 path-based rules not loaded on Write, only on Read\n- #38487 feature request to load on Write and Edit, closed as stale\n- #63142 rules not loaded when creating new files matching the pattern\n- #16853 rules not automatically loaded when working with matching files\n- #31292 disallowedTools Write and Edit bypassed via Bash\n- #85511 Bash file edits bypass per-edit diff review\n- #39979 model uses Bash instead of dedicated tools despite the system prompt\n",
+  "closed_by": null,
+  "reactions": {
+    "url": "https://api.github.com/repos/anthropics/claude-code/issues/93706/reactions",
+    "total_count": 2,
+    "+1": 2,
+    "-1": 0,
+    "laugh": 0,
+    "hooray": 0,
+    "confused": 0,
+    "heart": 0,
+    "rocket": 0,
+    "eyes": 0
+  },
+  "timeline_url": "https://api.github.com/repos/anthropics/claude-code/issues/93706/timeline",
+  "performed_via_github_app": null,
+  "state_reason": null,
+  "pinned_comment": null
+}

@@ -1,0 +1,136 @@
+{
+  "url": "https://api.github.com/repos/anthropics/claude-code/issues/93403",
+  "repository_url": "https://api.github.com/repos/anthropics/claude-code",
+  "labels_url": "https://api.github.com/repos/anthropics/claude-code/issues/93403/labels{/name}",
+  "comments_url": "https://api.github.com/repos/anthropics/claude-code/issues/93403/comments",
+  "events_url": "https://api.github.com/repos/anthropics/claude-code/issues/93403/events",
+  "html_url": "https://github.com/anthropics/claude-code/issues/93403",
+  "id": 5414954644,
+  "node_id": "I_kwDON91aY88AAAABQsGmlA",
+  "number": 93403,
+  "title": "[BUG] Nested <subdir>/.claude/skills and subdirectory CLAUDE.md never load in auto mode: trigger fires only on Read/Edit/Write, not Bash or Grep (nested-directory variant of #90004)",
+  "user": {
+    "login": "alexandret-unity",
+    "id": 32303340,
+    "node_id": "MDQ6VXNlcjMyMzAzMzQw",
+    "avatar_url": "https://avatars.githubusercontent.com/u/32303340?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/alexandret-unity",
+    "html_url": "https://github.com/alexandret-unity",
+    "followers_url": "https://api.github.com/users/alexandret-unity/followers",
+    "following_url": "https://api.github.com/users/alexandret-unity/following{/other_user}",
+    "gists_url": "https://api.github.com/users/alexandret-unity/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/alexandret-unity/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/alexandret-unity/subscriptions",
+    "organizations_url": "https://api.github.com/users/alexandret-unity/orgs",
+    "repos_url": "https://api.github.com/users/alexandret-unity/repos",
+    "events_url": "https://api.github.com/users/alexandret-unity/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/alexandret-unity/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "labels": [
+    {
+      "id": 8190926409,
+      "node_id": "LA_kwDON91aY88AAAAB6DeeSQ",
+      "url": "https://api.github.com/repos/anthropics/claude-code/labels/bug",
+      "name": "bug",
+      "color": "FF6B80",
+      "default": true,
+      "description": "Something isn't working",
+      "archived_at": null,
+      "archived_by": null
+    },
+    {
+      "id": 8201030515,
+      "node_id": "LA_kwDON91aY88AAAAB6NHLcw",
+      "url": "https://api.github.com/repos/anthropics/claude-code/labels/has%20repro",
+      "name": "has repro",
+      "color": "ededed",
+      "default": false,
+      "description": "Has detailed reproduction steps",
+      "archived_at": null,
+      "archived_by": null
+    },
+    {
+      "id": 8201037318,
+      "node_id": "LA_kwDON91aY88AAAAB6NHmBg",
+      "url": "https://api.github.com/repos/anthropics/claude-code/labels/platform:windows",
+      "name": "platform:windows",
+      "color": "93A5FF",
+      "default": false,
+      "description": "Issue specifically occurs on Windows",
+      "archived_at": null,
+      "archived_by": null
+    },
+    {
+      "id": 8572664217,
+      "node_id": "LA_kwDON91aY88AAAAB_vh5mQ",
+      "url": "https://api.github.com/repos/anthropics/claude-code/labels/area:tools",
+      "name": "area:tools",
+      "color": "ededed",
+      "default": false,
+      "description": "",
+      "archived_at": null,
+      "archived_by": null
+    },
+    {
+      "id": 10082550553,
+      "node_id": "LA_kwDON91aY88AAAACWPeDGQ",
+      "url": "https://api.github.com/repos/anthropics/claude-code/labels/area:skills",
+      "name": "area:skills",
+      "color": "ededed",
+      "default": false,
+      "description": null,
+      "archived_at": null,
+      "archived_by": null
+    }
+  ],
+  "state": "open",
+  "locked": false,
+  "assignees": [
+
+  ],
+  "milestone": null,
+  "comments": 2,
+  "created_at": "2026-09-10T16:47:20Z",
+  "updated_at": "2026-10-09T13:35:59Z",
+  "closed_at": null,
+  "assignee": null,
+  "author_association": "NONE",
+  "issue_field_values": [
+
+  ],
+  "type": null,
+  "active_lock_reason": null,
+  "sub_issues_summary": {
+    "total": 0,
+    "completed": 0,
+    "percent_completed": 0
+  },
+  "issue_dependencies_summary": {
+    "blocked_by": 0,
+    "total_blocked_by": 0,
+    "blocking": 0,
+    "total_blocking": 0
+  },
+  "body": "### Preflight Checklist\n\n- [x] I have searched [existing issues](https://github.com/anthropics/claude-code/issues?q=is%3Aissue%20state%3Aopen%20label%3Abug) and this hasn't been reported yet\n- [x] This is a single bug report (please file separate reports for different bugs)\n- [x] I am using the latest version of Claude Code\n\n### What's Wrong?\n\nRelated to #90004 but not a duplicate. That issue covers skills with `paths:` frontmatter and traces the `conditionalSkills` matcher. This one covers two other consumers of the same Read/Edit/Write-only trigger that the code excerpt there does not touch: nested-directory skill discovery (`<subdir>/.claude/skills/`, the monorepo layout from the docs, no `paths:` frontmatter) and lazy loading of subdirectory `CLAUDE.md` / `AGENTS.md`. Filing separately so there is a tracker if the fix for #90004 only patches the `paths:` matcher. Close as duplicate if it turns out to cover both.\n\nThe docs say nested skills load \"the first time Claude reads or edits a file in that subdirectory\". In practice the trigger fires only for the Read, Edit and Write tools. Reading the same file through Bash (`cat`, `sed -n`, `grep`) or through the dedicated Grep tool does not load the nested skill, and does not load the subdirectory `CLAUDE.md` / `AGENTS.md` chain either.\n\nOn its own that would be a documentation gap. It becomes a functional bug in auto mode, because the auto-mode system prompt tells Claude to read files with Bash instead of the file tools:\n\n> While auto mode is active: Do your work through the Bash tool wherever it can accomplish the job: read files with cat, head, or sed -n, search with grep and find, and make file changes with sed, heredocs, or short scripts, rather than using the dedicated Read, Edit, or Write tools. Fall back to a dedicated tool only when Bash genuinely cannot do the job.\n\nSo in auto mode, one part of the product steers Claude away from the only tool calls that the other part relies on. A complete read-only investigation inside a subtree can finish without that subtree's skills, `CLAUDE.md` or `AGENTS.md` ever entering context. Any \"read the skill directly\" fallback placed in the nested `AGENTS.md` is gated by the same trigger, so it never gets a chance to run.\n\nVerified in one session on two unrelated subtrees of a large monorepo, each with its own nested `.claude/skills/<skill>`:\n- Two shell reads (`cat`, `sed -n`, `grep`) of source files under the first subtree loaded nothing. A five-line Read tool call on one of those same files loaded the skill and the whole nested `CLAUDE.md -> AGENTS.md` chain at once.\n- On the second subtree, the dedicated Grep tool with an explicit path under it loaded nothing. A Read on the same file loaded the skill immediately. Grep receives the path as a structured argument, so this is not only a shell-parsing problem.\n\n\n### What Should Happen?\n\nOne of the following, in order of preference:\n\n1. The trigger fires for any tool call that observes a path inside the subtree: Read, Edit, Write, Grep, Glob, and Bash commands whose arguments resolve to existing paths under a directory that owns a `.claude/` folder.\n2. Auto mode's Bash-first instruction exempts the first touch of a subtree that has a `.claude/` directory, or auto mode does not instruct Bash-first reads.\n3. At minimum, the docs state that only Read, Edit and Write tool calls trigger nested loading, so monorepo owners can plan around it.\n\n### Error Messages/Logs\n\n```shell\nNo error is printed. The symptom is the absence of the two notices that normally follow a Read in a subtree with its own `.claude/` directory:\n\n\nNew skills discovered in sub/.claude/skills, now available via the Skill tool:\n- demo\n\n\nand the injected `sub/CLAUDE.md` content. Both are missing after any number of Bash or Grep tool reads, and both appear immediately after a single Read tool call on the same file. `/demo` stays \"Unknown skill\" until that Read happens.\n```\n\n### Steps to Reproduce\n\n```bash\nmkdir -p repro/sub/.claude/skills/demo\ncd repro\ngit init -q\nprintf -- '---\\nname: demo\\ndescription: Demo nested skill. Use when working on files under sub/.\\n---\\nhello from nested skill\\n' > sub/.claude/skills/demo/SKILL.md\nprintf 'Nested CLAUDE.md was loaded\\n' > sub/CLAUDE.md\necho x > sub/file.txt\nclaude            # start at the repro root, auto mode\n```\n\nThen, in the session:\n\n1. Prompt: `Use Bash to run: cat sub/file.txt`\n   No \"New skills discovered\" notice. No `sub/CLAUDE.md` content. `/demo` is unknown.\n2. Prompt: `Use the Grep tool to search for x under sub/`\n   Same result. Nothing loads.\n3. Prompt: `Use the Read tool on sub/file.txt`\n   \"New skills discovered in sub/.claude/skills: demo\" appears immediately, and the content of `sub/CLAUDE.md` is injected.\n\nSteps 1 and 2 can be repeated any number of times before step 3 with no change.\n\n\n### Claude Model\n\nOpus\n\n### Is this a regression?\n\nNo, this never worked\n\n### Last Working Version\n\n_No response_\n\n### Claude Code Version\n\n2.1.267\n\n### Platform\n\nAnthropic API\n\n### Operating System\n\nWindows\n\n### Terminal/Shell\n\nWindows Terminal\n\n### Additional Information\n\nPermission mode: auto.\n\nThe Bash-vs-Read tool preference has been reported before as a model-side problem (#21696, #39979). Auto mode now makes that preference the instructed behavior, which is what turns the narrow trigger into a functional gap.\n\nRelated issues:\n- #90004 same trigger and same auto-mode aggravator, for `paths:` conditional skills. This report is the nested-directory and subdirectory `CLAUDE.md` variant. Also note #90004 is labeled `platform:linux`; this reproduces on Windows.\n- #88041 the auto-mode bashFirst instruction itself.\n- #40640 nested `.claude/skills` not discovered as documented. Closed as duplicate, canonical not named. Reporters do not say which tools read the files, so Bash reads are a plausible unrecorded cause.\n- #39787 nested skill not discovered \"even after actively reading and editing files\". Auto-closed as a duplicate of #39138, which is about three-level nesting inside one `.claude/skills/` tree, a different problem. Likely mis-triaged.\n- #23478, #38487, #63142 path-scoped rules and subdirectory `CLAUDE.md` load on Read but not on Write. Same trigger, different bypass.\n- #2571, #3529, #24987 subdirectory `CLAUDE.md` not loaded on access.\n- #41798 (closed docs issue) quotes the permissions doc line that Read/Edit deny rules apply to the built-in file tools, not to Bash subprocesses. Same class of gap: a mechanism keyed on the file tools that Bash walks around.\n",
+  "closed_by": null,
+  "reactions": {
+    "url": "https://api.github.com/repos/anthropics/claude-code/issues/93403/reactions",
+    "total_count": 4,
+    "+1": 4,
+    "-1": 0,
+    "laugh": 0,
+    "hooray": 0,
+    "confused": 0,
+    "heart": 0,
+    "rocket": 0,
+    "eyes": 0
+  },
+  "timeline_url": "https://api.github.com/repos/anthropics/claude-code/issues/93403/timeline",
+  "performed_via_github_app": null,
+  "state_reason": null,
+  "pinned_comment": null
+}

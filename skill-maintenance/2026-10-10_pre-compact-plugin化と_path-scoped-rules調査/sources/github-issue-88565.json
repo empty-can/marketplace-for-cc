@@ -1,0 +1,136 @@
+{
+  "url": "https://api.github.com/repos/anthropics/claude-code/issues/88565",
+  "repository_url": "https://api.github.com/repos/anthropics/claude-code",
+  "labels_url": "https://api.github.com/repos/anthropics/claude-code/issues/88565/labels{/name}",
+  "comments_url": "https://api.github.com/repos/anthropics/claude-code/issues/88565/comments",
+  "events_url": "https://api.github.com/repos/anthropics/claude-code/issues/88565/events",
+  "html_url": "https://github.com/anthropics/claude-code/issues/88565",
+  "id": 5215916132,
+  "node_id": "I_kwDON91aY88AAAABNuSQZA",
+  "number": 88565,
+  "title": "[BUG] Auto mode silently disables path-scoped rules: it instructs the agent to edit files through Bash, and Bash edits never trigger rule injection",
+  "user": {
+    "login": "gustavopiltcher",
+    "id": 991532,
+    "node_id": "MDQ6VXNlcjk5MTUzMg==",
+    "avatar_url": "https://avatars.githubusercontent.com/u/991532?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/gustavopiltcher",
+    "html_url": "https://github.com/gustavopiltcher",
+    "followers_url": "https://api.github.com/users/gustavopiltcher/followers",
+    "following_url": "https://api.github.com/users/gustavopiltcher/following{/other_user}",
+    "gists_url": "https://api.github.com/users/gustavopiltcher/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/gustavopiltcher/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/gustavopiltcher/subscriptions",
+    "organizations_url": "https://api.github.com/users/gustavopiltcher/orgs",
+    "repos_url": "https://api.github.com/users/gustavopiltcher/repos",
+    "events_url": "https://api.github.com/users/gustavopiltcher/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/gustavopiltcher/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "labels": [
+    {
+      "id": 8190926409,
+      "node_id": "LA_kwDON91aY88AAAAB6DeeSQ",
+      "url": "https://api.github.com/repos/anthropics/claude-code/labels/bug",
+      "name": "bug",
+      "color": "FF6B80",
+      "default": true,
+      "description": "Something isn't working",
+      "archived_at": null,
+      "archived_by": null
+    },
+    {
+      "id": 8201030515,
+      "node_id": "LA_kwDON91aY88AAAAB6NHLcw",
+      "url": "https://api.github.com/repos/anthropics/claude-code/labels/has%20repro",
+      "name": "has repro",
+      "color": "ededed",
+      "default": false,
+      "description": "Has detailed reproduction steps",
+      "archived_at": null,
+      "archived_by": null
+    },
+    {
+      "id": 8223769435,
+      "node_id": "LA_kwDON91aY88AAAAB6izDWw",
+      "url": "https://api.github.com/repos/anthropics/claude-code/labels/platform:macos",
+      "name": "platform:macos",
+      "color": "93A5FF",
+      "default": false,
+      "description": "Issue specifically occurs on macOS",
+      "archived_at": null,
+      "archived_by": null
+    },
+    {
+      "id": 8572719646,
+      "node_id": "LA_kwDON91aY88AAAAB_vlSHg",
+      "url": "https://api.github.com/repos/anthropics/claude-code/labels/area:core",
+      "name": "area:core",
+      "color": "ededed",
+      "default": false,
+      "description": "",
+      "archived_at": null,
+      "archived_by": null
+    },
+    {
+      "id": 8697783922,
+      "node_id": "LA_kwDON91aY88AAAACBm2mcg",
+      "url": "https://api.github.com/repos/anthropics/claude-code/labels/area:bash",
+      "name": "area:bash",
+      "color": "ededed",
+      "default": false,
+      "description": null,
+      "archived_at": null,
+      "archived_by": null
+    }
+  ],
+  "state": "open",
+  "locked": false,
+  "assignees": [
+
+  ],
+  "milestone": null,
+  "comments": 7,
+  "created_at": "2026-08-21T16:01:33Z",
+  "updated_at": "2026-10-01T16:35:08Z",
+  "closed_at": null,
+  "assignee": null,
+  "author_association": "NONE",
+  "issue_field_values": [
+
+  ],
+  "type": null,
+  "active_lock_reason": null,
+  "sub_issues_summary": {
+    "total": 0,
+    "completed": 0,
+    "percent_completed": 0
+  },
+  "issue_dependencies_summary": {
+    "blocked_by": 0,
+    "total_blocked_by": 0,
+    "blocking": 0,
+    "total_blocking": 0
+  },
+  "body": "### Preflight Checklist\n\n- [x] I have searched [existing issues](https://github.com/anthropics/claude-code/issues?q=is%3Aissue%20state%3Aopen%20label%3Abug) and this hasn't been reported yet\n- [x] This is a single bug report (please file separate reports for different bugs)\n- [x] I am using the latest version of Claude Code\n\n### What's Wrong?\n\nTwo behaviors that are each defensible in isolation combine into a silent failure of the `.claude/rules/` mechanism:\n\n1. A rule file with a `paths:` frontmatter is injected into context only when the agent touches a matching file with the Read, Write, or Edit tools. When the same file is modified through the Bash tool (`sed -i`, a heredoc, a python one-liner), the rule is never injected.\n2. Auto mode (and bypass permissions mode) instructs the agent to prefer exactly that path. In 2.1.238 the system prompt includes, verbatim from the binary:\n\n> Do your work through the Bash tool wherever it can accomplish the job: read files with cat, head, or sed -n, search with grep and find, and make file changes with sed, heredocs, or short scripts, rather than using the dedicated Read, Edit, or Write tools. Fall back to a dedicated tool only when Bash genuinely cannot do the job.\n\nThe combination means that under auto mode, the instructed default path for file changes is the one path where path-scoped rules never load. The agent proceeds with no knowledge that a rule governs the file, the rule author gets no signal that their rule was skipped, and nothing in the transcript points at the cause. Even outside those modes the exposure exists, since Bash edits are routine and `acceptEdits` auto-approves `sed` alongside the Edit tool, but auto mode turns an occasional miss into the default behavior.\n\nReal-world impact: an infrastructure repo governs its central config file with three path-scoped rules (required companion files, a mandated document format, a threat-model checklist). The agent edited that config with a `python3` one-liner through Bash. None of the three rules loaded, and the change shipped in a merge request with the companion documents present but in the wrong format, which one of those unloaded rules specifies. A second merge request was needed to fix it.\n\n### What Should Happen?\n\nPath-scoped rule injection should key on which files a tool call actually touched, not on which tool was used. The docs already describe the trigger in tool-agnostic terms: \"Path-scoped rules trigger when Claude reads files matching the pattern, not on every tool use\" (https://code.claude.com/docs/en/memory.md, \"Path-specific rules\"). Nothing there says the mechanism is limited to the dedicated file tools.\n\nSuggested fix: after a Bash tool call, the CLI can determine which files changed on disk. Running the same `paths` matcher already used for Read/Write/Edit against that set, and injecting any matching rule, would preserve progressive disclosure (only the matching rule loads). It fires one tool call later than the Read/Edit path, which is acceptable for rules that govern what a commit must contain.\n\n### Steps to Reproduce\n\n1. Create a repo with `.claude/rules/example.md`:\n\n   ```markdown\n   ---\n   paths:\n     - \"config.json\"\n   ---\n\n   # Rule\n   MAGIC-TOKEN-ZR41: Every change to config.json requires adding the line \"rule-fired\" to CHANGELOG.md.\n   ```\n\n   plus `config.json` (`{\"value\": 1}`) and a `CHANGELOG.md`.\n\n2. Session A, edit through the Edit tool:\n\n   ```\n   claude -p --permission-mode acceptEdits --allowedTools \"Read,Edit\" \\\n     \"Change the value in config.json from 1 to 2 using the Edit tool. Then answer: is there any project rule in your context containing the string MAGIC-TOKEN-ZR41? Quote it if so.\"\n   ```\n\n   Result: the model reports the rule was injected via a `system-reminder` right after it read `config.json`, and quotes it verbatim.\n\n3. Session B, same change through Bash only:\n\n   ```\n   claude -p --permission-mode acceptEdits --allowedTools \"Bash\" \\\n     \"Change the value in config.json from 1 to 2. Use ONLY the Bash tool with a sed or python one-liner. Do not use the Read, Edit, or Write tools at all. Then answer: is there any project rule in your context containing the string MAGIC-TOKEN-ZR41? Quote it if so.\"\n   ```\n\n   Result: `config.json` is changed, the model answers that no such rule exists in its context, and `CHANGELOG.md` is untouched. The rule never fired.\n\nReproduced with model `claude-sonnet-5` on Claude Code 2.1.238.\n\n### Claude Model\n\nSonnet (default)\n\n### Is this a regression?\n\nI don't know\n\n### Claude Code Version\n\n2.1.238 (Claude Code)\n\n### Platform\n\nAnthropic API\n\n### Operating System\n\nmacOS\n\n### Terminal/Shell\n\nNon-interactive/CI environment\n\n### Additional Information\n\nWhy a user-space workaround is not sufficient: a PreToolUse hook on Bash can only inspect the command string. Deciding which files a shell command will touch from its text is not generally decidable: the path may be built in a variable, or hidden behind a script, a Makefile target, or an interpreter. Any attempt produces false positives, false negatives, or both. The reliable signal (the set of files that changed) is available to the CLI and not to a hook that runs before execution. A PostToolUse hook keyed on `git status` is a workable approximation, but it only covers repositories and duplicates a matcher the CLI already implements.\n\nClosest existing issue found while searching: #23569 (closed), which is about `paths:` filtering under git worktree resolution — a different problem.\n",
+  "closed_by": null,
+  "reactions": {
+    "url": "https://api.github.com/repos/anthropics/claude-code/issues/88565/reactions",
+    "total_count": 11,
+    "+1": 11,
+    "-1": 0,
+    "laugh": 0,
+    "hooray": 0,
+    "confused": 0,
+    "heart": 0,
+    "rocket": 0,
+    "eyes": 0
+  },
+  "timeline_url": "https://api.github.com/repos/anthropics/claude-code/issues/88565/timeline",
+  "performed_via_github_app": null,
+  "state_reason": null,
+  "pinned_comment": null
+}

@@ -1,0 +1,136 @@
+{
+  "url": "https://api.github.com/repos/anthropics/claude-code/issues/90004",
+  "repository_url": "https://api.github.com/repos/anthropics/claude-code",
+  "labels_url": "https://api.github.com/repos/anthropics/claude-code/issues/90004/labels{/name}",
+  "comments_url": "https://api.github.com/repos/anthropics/claude-code/issues/90004/comments",
+  "events_url": "https://api.github.com/repos/anthropics/claude-code/issues/90004/events",
+  "html_url": "https://github.com/anthropics/claude-code/issues/90004",
+  "id": 5264223304,
+  "node_id": "I_kwDON91aY88AAAABOcWsSA",
+  "number": 90004,
+  "title": "[BUG] Conditional (paths:) skills can never activate in auto mode — the trigger is wired only to Read/Edit/Write, which bashFirst tells the model not to use",
+  "user": {
+    "login": "mvysny",
+    "id": 254091,
+    "node_id": "MDQ6VXNlcjI1NDA5MQ==",
+    "avatar_url": "https://avatars.githubusercontent.com/u/254091?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/mvysny",
+    "html_url": "https://github.com/mvysny",
+    "followers_url": "https://api.github.com/users/mvysny/followers",
+    "following_url": "https://api.github.com/users/mvysny/following{/other_user}",
+    "gists_url": "https://api.github.com/users/mvysny/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/mvysny/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/mvysny/subscriptions",
+    "organizations_url": "https://api.github.com/users/mvysny/orgs",
+    "repos_url": "https://api.github.com/users/mvysny/repos",
+    "events_url": "https://api.github.com/users/mvysny/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/mvysny/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "labels": [
+    {
+      "id": 8190926409,
+      "node_id": "LA_kwDON91aY88AAAAB6DeeSQ",
+      "url": "https://api.github.com/repos/anthropics/claude-code/labels/bug",
+      "name": "bug",
+      "color": "FF6B80",
+      "default": true,
+      "description": "Something isn't working",
+      "archived_at": null,
+      "archived_by": null
+    },
+    {
+      "id": 8201030515,
+      "node_id": "LA_kwDON91aY88AAAAB6NHLcw",
+      "url": "https://api.github.com/repos/anthropics/claude-code/labels/has%20repro",
+      "name": "has repro",
+      "color": "ededed",
+      "default": false,
+      "description": "Has detailed reproduction steps",
+      "archived_at": null,
+      "archived_by": null
+    },
+    {
+      "id": 8223769668,
+      "node_id": "LA_kwDON91aY88AAAAB6izERA",
+      "url": "https://api.github.com/repos/anthropics/claude-code/labels/platform:linux",
+      "name": "platform:linux",
+      "color": "93A5FF",
+      "default": false,
+      "description": "Issue specifically occurs on Linux",
+      "archived_at": null,
+      "archived_by": null
+    },
+    {
+      "id": 8572664217,
+      "node_id": "LA_kwDON91aY88AAAAB_vh5mQ",
+      "url": "https://api.github.com/repos/anthropics/claude-code/labels/area:tools",
+      "name": "area:tools",
+      "color": "ededed",
+      "default": false,
+      "description": "",
+      "archived_at": null,
+      "archived_by": null
+    },
+    {
+      "id": 10082550553,
+      "node_id": "LA_kwDON91aY88AAAACWPeDGQ",
+      "url": "https://api.github.com/repos/anthropics/claude-code/labels/area:skills",
+      "name": "area:skills",
+      "color": "ededed",
+      "default": false,
+      "description": null,
+      "archived_at": null,
+      "archived_by": null
+    }
+  ],
+  "state": "open",
+  "locked": false,
+  "assignees": [
+
+  ],
+  "milestone": null,
+  "comments": 3,
+  "created_at": "2026-08-27T05:29:47Z",
+  "updated_at": "2026-09-24T21:57:56Z",
+  "closed_at": null,
+  "assignee": null,
+  "author_association": "NONE",
+  "issue_field_values": [
+
+  ],
+  "type": null,
+  "active_lock_reason": null,
+  "sub_issues_summary": {
+    "total": 0,
+    "completed": 0,
+    "percent_completed": 0
+  },
+  "issue_dependencies_summary": {
+    "blocked_by": 0,
+    "total_blocked_by": 0,
+    "blocking": 0,
+    "total_blocking": 0
+  },
+  "body": "## Preflight Checklist\n\n- [x] I have searched [existing issues](https://github.com/anthropics/claude-code/issues?q=is%3Aissue+state%3Aopen+label%3Abug) and this hasn't been reported yet\n- [x] This is a single bug report (please file separate reports for different bugs)\n- [x] I am using the latest version of Claude Code\n\n## What's Wrong?\n\nConditional skills (those declaring `paths:` in SKILL.md frontmatter) are activated **only** by the `Read`, `Edit` and `Write` tools. Auto mode's `bashFirst` system prompt (#88041) instructs the model to do all file I/O through Bash instead of those three tools. The two features are individually reasonable and mutually exclusive in practice: **in an auto-mode session, a `paths:`-scoped skill can never activate**, no matter how many matching files the model reads and writes.\n\nThis is a root cause for the \"trigger never fires\" symptom of #62049 (closed as stale, never diagnosed).\n\nI hit this on a Ruby TUI project whose `CLAUDE.md` says, unconditionally, \"read the `tuile` skill before designing components\". The skill declares `paths: [\"**/*.rb\"]`. I spent a whole session editing `.rb` files — the skill never appeared, and `Skill(tuile)` returned `Unknown skill: tuile`. Every file access had gone through `cat` / `sed` / heredocs, as auto mode directs.\n\n## What Should Happen?\n\nEither:\n\n1. **Bash file access should also feed the conditional-skill matcher.** Paths are already extracted from Bash commands elsewhere in the product (permission checks, file-write detection), so the signal exists.\n2. **Or `bashFirst` should not be injected when the session has conditional skills loaded** — the cheap fix, at the cost of leaving conditional skills dependent on tool choice.\n\nOption 1 is the real fix: as long as activation is tied to three specific tool names, any future prompt or model that prefers a different path to the filesystem will silently switch these skills off again.\n\n## Steps to Reproduce\n\n1. Create `~/.claude/skills/zebra/SKILL.md`:\n   ```yaml\n   ---\n   name: zebra\n   description: Test skill. Says ZEBRA.\n   paths:\n     - \"**/*.rb\"\n   ---\n   Say ZEBRA.\n   ```\n2. Start a session in a repo containing `.rb` files, with auto mode enabled.\n3. Ask for a change to a `.rb` file. Auto mode steers the edit through Bash (`sed`, heredoc, `python3`).\n4. The skill never appears in the available-skills listing; `/zebra` and `Skill(zebra)` return `Unknown skill: zebra`.\n5. Now do one `Read` of the same `.rb` file. The skill activates and appears in the listing.\n\nStep 5 is the control: the mechanism works, it is just unreachable through the tool auto mode tells the model to use.\n\n## Evidence\n\nFrom the 2.1.247 native binary.\n\nThe loader parses `paths:` into a gitignore-style matcher, keeps such skills in a `conditionalSkills` map (not in the listing), and promotes them to `dynamicSkills` on a path match:\n\n```js\nfor (let [r, o] of Pv().conditionalSkills) {\n  if (o.type !== \"prompt\" || !o.paths || o.paths.length === 0) continue;\n  let s = Rjr.default().add(D9(o.paths, \"skill_paths\"));   // the `ignore` package\n  for (let i of e) {\n    let a = o1t(i) ? Ajr(t, i) : i;                        // absolute -> relative to cwd\n    if (!a || a.startsWith(\"..\") || o1t(a)) continue;\n    if (s.ignores(a)) {\n      Pv().dynamicSkills.set(m9e(o), o),\n      Pv().conditionalSkills.delete(r),\n      Pv().activatedConditionalSkillNames.add(r),\n      n.push(r),\n      _(`[skills] Activated conditional skill '${r}' (matched path: ${a})`);\n      break\n    }\n  }\n}\n```\n\nReached through one entry point:\n\n```js\nasync function bJ(e, t, n, r) {\n  let o = ze(), s = await gLs(e, [t], o, r);\n  if (s.length > 0) { ...; w9e(s).then(() => { Sjr([t], o) }).catch(() => {}) }\n  Sjr([t], o)\n}\n```\n\n`bJ` has exactly **three** call sites, all guarded by `!CLAUDE_CODE_SIMPLE && remoteCall === undefined`:\n\n- the **Edit** handler — `await bJ(t.session.host, g, c, t.storageV5)`\n- the **Write** handler — `await bJ(n.session.host, d, u, n.storageV5)`\n- the **Read** handler — `await bJ(o.session.host, p, o.dynamicSkillDirTriggers, o.storageV5)`\n\nNo Bash path reaches it. Relevant telemetry: `tengu_dynamic_skills_changed` with `source: \"conditional_paths\"`.\n\nMeanwhile the `bashFirst` auto-mode injection (quoted in full in #88041) says:\n\n> Do your work through the Bash tool wherever it can accomplish the job: read files with cat, head, or sed -n, search with grep and find, and make file changes with sed, heredocs, or short scripts, rather than using the dedicated Read, Edit, or Write tools.\n\nThose are precisely the three tools activation is hooked to.\n\nCorrelation check on this install: of 10 personal skills, the 5 declaring `paths:` were all absent from the session's available-skills listing; the 5 without it were all present.\n\n## Notes\n\n- Because an unactivated conditional skill is also unreachable **by name** (#49835), a project `CLAUDE.md` that instructs \"read skill X\" cannot be obeyed — the model gets `Unknown skill`, with nothing to indicate the skill exists but is dormant. A dormant conditional skill arguably deserves a distinct error, or a listing entry marked as such.\n- Suggested labels: `area:skills`, `area:tools`, `area:core`.\n\n## Is this a regression?\n\nI don't know — `bashFirst` is the newer half of the pair.\n\n## Claude Code Version\n\n2.1.247 (Claude Code), native build\n\n## Platform\n\nAnthropic API\n\n## Operating System\n\nLinux (7.0.0-29-generic)\n\n## Terminal/Shell\n\nfish\n\n## Additional Information\n\nRelated:\n- #88041 — the `bashFirst` auto-mode instruction itself (this is a further consequence of it)\n- #62049 — \"`paths:` never triggers skill auto-loading\", closed as stale; this is a root cause for it\n- #49835 — `paths:` makes a skill undiscoverable and unreachable by name\n",
+  "closed_by": null,
+  "reactions": {
+    "url": "https://api.github.com/repos/anthropics/claude-code/issues/90004/reactions",
+    "total_count": 5,
+    "+1": 5,
+    "-1": 0,
+    "laugh": 0,
+    "hooray": 0,
+    "confused": 0,
+    "heart": 0,
+    "rocket": 0,
+    "eyes": 0
+  },
+  "timeline_url": "https://api.github.com/repos/anthropics/claude-code/issues/90004/timeline",
+  "performed_via_github_app": null,
+  "state_reason": null,
+  "pinned_comment": null
+}

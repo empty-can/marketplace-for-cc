@@ -1,0 +1,136 @@
+{
+  "url": "https://api.github.com/repos/anthropics/claude-code/issues/100366",
+  "repository_url": "https://api.github.com/repos/anthropics/claude-code",
+  "labels_url": "https://api.github.com/repos/anthropics/claude-code/issues/100366/labels{/name}",
+  "comments_url": "https://api.github.com/repos/anthropics/claude-code/issues/100366/comments",
+  "events_url": "https://api.github.com/repos/anthropics/claude-code/issues/100366/events",
+  "html_url": "https://github.com/anthropics/claude-code/issues/100366",
+  "id": 5754336126,
+  "node_id": "I_kwDON91aY88AAAABVvwzfg",
+  "number": 100366,
+  "title": "[DOCS] Sub-agents page: omitClaudeMd and Explore do not stop a nested CLAUDE.md or path-scoped rule loaded after a Read; --agent session has no git status",
+  "user": {
+    "login": "willmcginnis",
+    "id": 40506393,
+    "node_id": "MDQ6VXNlcjQwNTA2Mzkz",
+    "avatar_url": "https://avatars.githubusercontent.com/u/40506393?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/willmcginnis",
+    "html_url": "https://github.com/willmcginnis",
+    "followers_url": "https://api.github.com/users/willmcginnis/followers",
+    "following_url": "https://api.github.com/users/willmcginnis/following{/other_user}",
+    "gists_url": "https://api.github.com/users/willmcginnis/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/willmcginnis/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/willmcginnis/subscriptions",
+    "organizations_url": "https://api.github.com/users/willmcginnis/orgs",
+    "repos_url": "https://api.github.com/users/willmcginnis/repos",
+    "events_url": "https://api.github.com/users/willmcginnis/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/willmcginnis/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "labels": [
+    {
+      "id": 8190926409,
+      "node_id": "LA_kwDON91aY88AAAAB6DeeSQ",
+      "url": "https://api.github.com/repos/anthropics/claude-code/labels/bug",
+      "name": "bug",
+      "color": "FF6B80",
+      "default": true,
+      "description": "Something isn't working",
+      "archived_at": null,
+      "archived_by": null
+    },
+    {
+      "id": 8190926411,
+      "node_id": "LA_kwDON91aY88AAAAB6DeeSw",
+      "url": "https://api.github.com/repos/anthropics/claude-code/labels/documentation",
+      "name": "documentation",
+      "color": "A2D9CE",
+      "default": true,
+      "description": "Improvements or additions to documentation",
+      "archived_at": null,
+      "archived_by": null
+    },
+    {
+      "id": 8223769435,
+      "node_id": "LA_kwDON91aY88AAAAB6izDWw",
+      "url": "https://api.github.com/repos/anthropics/claude-code/labels/platform:macos",
+      "name": "platform:macos",
+      "color": "93A5FF",
+      "default": false,
+      "description": "Issue specifically occurs on macOS",
+      "archived_at": null,
+      "archived_by": null
+    },
+    {
+      "id": 9119047308,
+      "node_id": "LA_kwDON91aY88AAAACH4mejA",
+      "url": "https://api.github.com/repos/anthropics/claude-code/labels/area:agents",
+      "name": "area:agents",
+      "color": "ededed",
+      "default": false,
+      "description": null,
+      "archived_at": null,
+      "archived_by": null
+    },
+    {
+      "id": 10088371880,
+      "node_id": "LA_kwDON91aY88AAAACWVBWqA",
+      "url": "https://api.github.com/repos/anthropics/claude-code/labels/area:docs",
+      "name": "area:docs",
+      "color": "ededed",
+      "default": false,
+      "description": null,
+      "archived_at": null,
+      "archived_by": null
+    }
+  ],
+  "state": "open",
+  "locked": false,
+  "assignees": [
+
+  ],
+  "milestone": null,
+  "comments": 2,
+  "created_at": "2026-10-08T01:27:09Z",
+  "updated_at": "2026-10-08T20:10:48Z",
+  "closed_at": null,
+  "assignee": null,
+  "author_association": "NONE",
+  "issue_field_values": [
+
+  ],
+  "type": null,
+  "active_lock_reason": null,
+  "sub_issues_summary": {
+    "total": 0,
+    "completed": 0,
+    "percent_completed": 0
+  },
+  "issue_dependencies_summary": {
+    "blocked_by": 0,
+    "total_blocked_by": 0,
+    "blocking": 0,
+    "total_blocking": 0
+  },
+  "body": "### Documentation Type\n\nUnclear/confusing documentation\n\n### Documentation Location\n\nhttps://code.claude.com/docs/en/sub-agents\n\n### Section/Topic\n\n\"Frontmatter reference\" (`omitClaudeMd` row), \"What loads at startup\", and \"Invoke subagents explicitly\" > \"Run the whole session as a subagent\"\n\n### Current Documentation\n\nThe `omitClaudeMd` row says: \"Set to `true` to launch this subagent without the user, project, and local CLAUDE.md files; managed policy files still load, except for managed subagents.\"\n\n\"What loads at startup\" says a subagent whose definition sets `omitClaudeMd` \"loads only the managed policy files\", and that Explore and Plan skip CLAUDE.md files and the git status snapshot.\n\n\"Run the whole session as a subagent\" says that, unless the agent's prompt is empty, a custom subagent's system prompt \"replaces the default Claude Code system prompt entirely, the same way `--system-prompt` does\", and that CLAUDE.md files still load.\n\n### What's Wrong or Missing?\n\nMeasured on Claude Code 2.1.293 with a request-capturing local API server and a unique marker string in each instruction file:\n\n1. At startup, `omitClaudeMd: true` (in frontmatter or in `--agents` JSON) works as documented: none of the user, project, local or `.claude/rules/` content reached the subagent, while the same agent without the field received all of it. But after the subagent Reads a file in a subdirectory, that subdirectory's `CLAUDE.md` and a `paths:`-scoped rule matching the file arrive as system-reminders in its next request. The built-in Explore agent behaves the same way (Plan skipped CLAUDE.md at startup as documented; its read-triggered behaviour was not tested). Several sentences state the omission without a startup qualifier: the frontmatter row (\"launch this subagent without the user, project, and local CLAUDE.md files\"), \"Explore and Plan skip your CLAUDE.md files\", and \"To launch one of your own subagents without the user, project, and local CLAUDE.md files\". Nested CLAUDE.md loading on read is documented on the memory page, but not how it interacts with `omitClaudeMd` or Explore, so a reader can take `omitClaudeMd` as a guarantee that no CLAUDE.md content reaches the subagent.\n\n2. A session started with `claude -p --agent <name>` had no git status snapshot in its requests, while plain `claude -p` in the same repository did. CLAUDE.md files loaded and `omitClaudeMd` was ignored, both as documented. The page does not say whether the git status snapshot goes away with the replaced system prompt. (Only `--agent` was tested, not the `agent` setting or `--system-prompt` alone.)\n\n### Suggested Improvement\n\n- In the `omitClaudeMd` row and \"What loads at startup\", say that the omission applies to startup, and that a nested `CLAUDE.md` or a path-scoped rule can still be attached when the subagent reads a file they apply to, if that is intended. Add the same note for Explore, and confirm whether Plan behaves the same.\n- In \"Run the whole session as a subagent\", say whether the git status snapshot is kept or dropped.\n\n### Impact\n\nMedium - Makes feature difficult to understand\n\n### Additional Context\n\nMethod: a throwaway git repo with a different marker string in each of `CLAUDE.md`, `CLAUDE.local.md`, `.claude/rules/*.md`, a parent repo's rules, a `paths: sub/**` rule and `sub/CLAUDE.md`. Each case ran `claude -p` against a local server that recorded every request. Positive control: the main loop's first request carried all the startup markers in every run except the `--bare` and `--safe-mode` cases, where their absence was the expected result. The startup `omitClaudeMd` case was repeated in the interactive TUI with the same result.\n\nSteps to reproduce item 1:\n1. In a git repo, create `sub/CLAUDE.md` containing a unique string, and `sub/file.txt`.\n2. Create `.claude/agents/omit-probe.md`:\n   ```\n   ---\n   name: omit-probe\n   description: Reads one file and reports its first line\n   omitClaudeMd: true\n   ---\n   Read the file you are given and reply with its first line.\n   ```\n3. Start a session and ask: \"Use the omit-probe agent to read sub/file.txt.\"\n4. Inspect the subagent's request after the Read (for example with `ANTHROPIC_BASE_URL` pointed at a logging proxy): the `sub/CLAUDE.md` string is present as a system-reminder. Its first request does not contain it.\n\nRelated: #92750 (another item in the same \"What loads at startup\" list).\n\nEnvironment: Claude Code 2.1.293, macOS.\n",
+  "closed_by": null,
+  "reactions": {
+    "url": "https://api.github.com/repos/anthropics/claude-code/issues/100366/reactions",
+    "total_count": 0,
+    "+1": 0,
+    "-1": 0,
+    "laugh": 0,
+    "hooray": 0,
+    "confused": 0,
+    "heart": 0,
+    "rocket": 0,
+    "eyes": 0
+  },
+  "timeline_url": "https://api.github.com/repos/anthropics/claude-code/issues/100366/timeline",
+  "performed_via_github_app": null,
+  "state_reason": null,
+  "pinned_comment": null
+}
