@@ -8,9 +8,9 @@ Claude Code 用 Plugin Marketplace（`.claude/` チーム共有・統制にお�
 
 設計・配布・統制の**正本はこのリポジトリではなく** [`cc-relative-info` の `claude-dir-sharing-governance/`](https://github.com/empty-can/cc-relative-info/tree/develop/claude-dir-sharing-governance)。Marketplace による配布の手順は同ドキュメントの `reports/02.配布物の開発・テスト/01.Plugin・Marketplace編/` を参照し、構成・命名の判断はそちらに合わせる。
 
-## `skill-maintenance/` について
+## `.claude/workspace/skill-maintenance/` について
 
-Plugin / skill の定期メンテナンスに関する調査・検証・設計の記録（配布物ではない）。各調査フォルダの `README.md` から読む。公式 docs の抜粋・GitHub issue 原文・実測結果・再現スクリプトを原文のまま残す方針で、要約し直さない。
+Plugin / skill の定期メンテナンスに関する調査・検証・設計の記録（配布物ではない。`.claude/work/` は gitignore 対象なので、コミットして残す記録は `.claude/workspace/` に置く）。各調査フォルダの `README.md` から読む。公式 docs の抜粋・GitHub issue 原文・実測結果・再現スクリプトを原文のまま残す方針で、要約し直さない。
 
 ## `.claude/` について
 

@@ -3,7 +3,7 @@
 - 取得元: `/c/cc-workspace/LLMs/official-llms-txts/code.claude.com/docs/llms-full.txt`
 - ミラーの更新日時: 2026-10-10 15:00:04.085164800 +0900
 - ミラーの行数: 120369
-- 抽出日時: 2026-10-10 16:28:35 +0900
+- 抽出日時: 2026-10-10 18:50:51 +0900
 - 抽出スクリプト: `scripts/extract-doc-excerpts.sh`（見出しを起点に抽出。行番号はミラー更新でずれる）
 
 各ブロックの行頭の数字は、抽出時点の llms-full.txt の行番号。
