@@ -1,21 +1,20 @@
 ---
 name: pre-compact
-description: /compact または /clear 実行前の事前準備を実施する。まず終了方式（/compact=会話要約を残す / /clear=ファイルのみで再開）を判定し、方式に応じて準備を最適化する（/compact なら退避は最小限、/clear なら継続情報を全量外部化）。未コミット変更も確認する
-disable-model-invocation: true
+description: 作業指示者が /compact または /clear の前に「pre-compact を実行して」と明示的に依頼したときだけ使う事前準備 Skill。終了方式（/compact=会話要約を残す / /clear=ファイルのみで再開）を判定し、方式に応じて継続情報の memory 退避を最適化し、未コミット変更も確認する。memory を書き換える副作用があるため、明示的な依頼が無いときは自発的に使わない
 ---
 
 # pre-compact（コンパクション前事前準備）
 
 `/compact` または `/clear` 実行前に呼び出し、次セッション再開時に最低限の文脈が復元できる状態を整える Skill。**最初に終了方式を判定し、その方式で必要な準備だけを行う**ことで、不要なメモリ退避を避けつつ確実に再開可能な状態を作る。
 
-## 起動方法
+## 起動方法と実行ゲート
 
-本 Skill は memory ファイルを書き換える副作用があるため、`disable-model-invocation: true` とし、**作業指示者が起動を指示したときだけ**実行する。起動の形は 2 つ:
+本 Skill は memory ファイルを書き換える副作用があるため、**作業指示者が明示的に求めたときだけ**実行する。Claude は自分の判断では起動しない。起動の形は 2 つ:
 
-- メッセージ先頭に `/pre-compact:pre-compact` と書く → Claude Code が直接実行する
-- 指示文の途中に `/pre-compact:pre-compact` と書く（例: 「ここまでをコミットしたら /pre-compact:pre-compact を実行して」）→ そのターンに限り Claude が実行できる
+- メッセージ先頭に `/pre-compact:pre-compact`（同名の skill が無ければ `/pre-compact`）と書く → Claude Code が直接実行する
+- 指示文の中で本 Skill の実行を求める（例: 「ここまでをコミットしたら /pre-compact を実行して」）→ Claude が Skill ツールで起動する。他の指示と併記してよい
 
-スラッシュ無しで「pre-compact」と書かれただけの場合は起動の許可にならない。Claude は本 Skill の手順を自分で再現せず、作業指示者に上記の形で起動を依頼する。
+**実行ゲート（起動直後に必ず行う）**: 直前の作業指示者のメッセージに、本 Skill の実行を求める明示的な指示があるかを確認する。該当するのは `/pre-compact` や `/pre-compact:pre-compact` の言及、または「pre-compact を実行して」に相当する文である。「/compact したい」「今日はここまで」のような文だけでは指示とみなさない。指示が無ければ、以降の手順は一切行わず、memory にも書き込まず、次の 1 行だけを返して終了する: 「pre-compact は作業指示者の明示的な指示で実行する Skill です。必要なら `/pre-compact:pre-compact` と指示してください」。ゲートを置くのは、誤って起動しても副作用が出ないようにするためである。
 
 ## 出力方針
 

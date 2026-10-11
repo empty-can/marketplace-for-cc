@@ -5,6 +5,6 @@
 - 初版（実運用での確認前のため 0.x としてリリース）
 - 移植元: `cc-relative-info` リポジトリ `feature/LLMs` ブランチの `.claude/skills/pre-compact/SKILL.md`（commit `000b3f4`、`/compact` と `/clear` の二分岐対応版）
 - 移植元からの変更点
-  - `disable-model-invocation: true` を付け、Claude が自分の判断で起動しないようにした。作業指示者がメッセージ中に `/pre-compact:pre-compact` と書いたターンに限り、Claude が実行できる
-  - 「起動方法」の節を追加し、呼び出し名と起動条件を本文に明記した
+  - 自発的な起動を抑えるため、description を「作業指示者が明示的に依頼したときだけ使う」と限定し、本文の冒頭に実行ゲート（直前の指示に明示的な依頼が無ければ何もせず終了）を追加した。`disable-model-invocation: true` は、指示文の中での起動（「〇〇した後に /pre-compact を実行して」）を Skill ツールが拒否するため採用しなかった（v2.1.296 で対話・非対話の両方を確認）
+  - 「起動方法と実行ゲート」の節を追加し、呼び出し名と起動条件を本文に明記した
   - `/clear` 提示時に、`/clear <名前>` で前の会話に名前を付けて `/resume` から戻れることを補足した

@@ -29,14 +29,14 @@
 
 呼び出し名は `/pre-compact:pre-compact` です。同じ名前の skill が他に無ければ、短い `/pre-compact` でも起動できます。
 
-この skill は memory ファイルを書き換えるため、Claude が自分の判断で起動することはありません（`disable-model-invocation: true`）。起動の形は 2 つです。
+起動の形は 2 つです。
 
 | 書き方 | 動作 |
 |---|---|
 | メッセージ先頭に `/pre-compact:pre-compact` | すぐに実行されます |
-| 指示文の途中に `/pre-compact:pre-compact`（例: 「ここまでをコミットしたら /pre-compact:pre-compact を実行して」） | そのターンの中で Claude が実行できます |
+| 指示文の中で実行を求める（例: 「ここまでをコミットしたら /pre-compact を実行して」） | Claude が他の指示と合わせて実行します |
 
-スラッシュ無しで「pre-compact」と書いても起動の許可にはなりません。
+この skill は memory ファイルを書き換えるため、作業指示者の明示的な指示が無い限り Claude は自分の判断で起動しません。誤って起動した場合も、skill は最初に直前の指示を確認し、明示的な依頼が無ければ何もせずに終了します。
 
 提示された方式に従って `/compact <指示文>` または `/clear` を実行してください。
 
