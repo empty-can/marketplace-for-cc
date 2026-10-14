@@ -133,6 +133,7 @@ sub-agent / background Agent を起動する作業の着手前に、以下 3 ス
 - **`/orchestrate` パターン A 並列実行時の長尾事象**: F02-001 §4.4 のとおり、Write（2026-05-03）→ Edit（2026-05-04 事前追加）→ Bash 読み取り系（`afea8b8`）と段階的に表面化した。事前列挙だけでは捕まらない長尾を §2 検出ベースで吸収する設計
 - **`bypassPermissions` の盲点**: `.git` / `.claude` / `.vscode` / `.idea` / `.husky` への書き込みも通過する。本プロジェクトの security 方針（deny 明示）と相性悪く非推奨
 - **fork mode 時の特殊挙動**: fork 時は `background` フィールドに関係なく全 spawn が background 化し、permission は事前承認フローに乗る。`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1` で同期化可能
+- **allow があっても認証が無ければ失敗する（2026-10-13 実測）**: `Bash(gh *)` が allow でも `gh` が未認証（`gh auth status` が "You are not logged into any GitHub hosts"、`GH_TOKEN` 未設定）なら `gh api` / `gh search` は全て失敗する。permission 拒否ではないので事前列挙（§1.2）では検出できない。GitHub MCP サーバーは別のトークンで動くため、同じセッションで MCP だけ通る。**対処**: `gh` / `git push` / `npm` 等の外部サービスを使う sub-agent を起動する前に、§1.2 の照合に「認証状態の確認」（`gh auth status`、必要なら作業指示者に `gh auth login` を依頼）を加える。sub-agent には「認証の欠如は権限拒否と区別して報告する」と指示する
 
 ## 4. 関連バックログ・参照
 
